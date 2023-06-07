@@ -5,7 +5,7 @@
 
 #include <dt-bindings/clock/stm32mp1-clksrc.h>
 #include "stm32mp15-u-boot.dtsi"
-#include "stm32mp15-ddr3-1x4Gb-1066-binG.dtsi"
+#include "stm32mp15-ddr3-2x2Gb-1066-binG.dtsi"
 
 / {
 	aliases {
@@ -17,9 +17,6 @@
 		u-boot,boot-led = "heartbeat";
 		u-boot,error-led = "error";
 		u-boot,mmc-env-partition = "fip";
-		st,adc_usb_pd = <&adc1 18>, <&adc1 19>;
-		st,fastboot-gpios = <&gpioa 13 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-		st,stm32prog-gpios = <&gpioa 14 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 	};
 
 #ifdef CONFIG_STM32MP15x_STM32IMAGE
@@ -54,14 +51,10 @@
 };
 
 &adc {
-	status = "okay";
+	status = "disable";
 };
 
 #ifndef CONFIG_TFABOOT
-&clk_hse {
-	st,digbypass;
-};
-
 &i2c4 {
 	u-boot,dm-pre-reloc;
 };
@@ -171,10 +164,6 @@
 		cfg = < 3 98 5 7 7 PQR(1,1,1) >;
 		u-boot,dm-pre-reloc;
 	};
-};
-
-&sai2 {
-	clocks = <&rcc SAI2>, <&rcc PLL3_Q>, <&rcc PLL3_R>;
 };
 
 &sdmmc1 {
