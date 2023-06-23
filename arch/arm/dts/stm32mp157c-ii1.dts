@@ -1,0 +1,473 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
+/*
+ * Copyright (C) 2023  Braiins Systems s.r.o.
+ *
+ * This file is part of Braiins Open-Source Initiative (BOSI).
+ *
+ * BOSI is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * Please, keep in mind that we may also license BOSI or any part thereof
+ * under a proprietary license. For more information on the terms and conditions
+ * of such proprietary license or if you have any other questions, please
+ * contact us at opensource@braiins.com.
+ */
+
+/dts-v1/;
+
+#include "stm32mp157.dtsi"
+#include "stm32mp15xc.dtsi"
+#include "stm32mp157c-ii1-pinctrl.dtsi"
+#include "stm32mp15xxab-pinctrl.dtsi"
+#include "stm32mp15-m4-srm.dtsi"
+
+/ {
+	model = "Braiins STM32MP157C (ii1) Control Board";
+	compatible = "braiins,ii1-stm\0st,stm32mp157";
+
+	aliases {
+		ethernet0 = &ethernet0;
+		i2c0 = &i2c1;
+		i2c1 = &i2c2;
+		i2c2 = &i2c4;
+		serial0 = &uart4;   /* DEBUG */
+		serial1 = &usart3;  /* Hashboard 1 */
+		serial2 = &uart5;   /* Hashboard 2 */
+		serial3 = &uart7;   /* Hashboard 3 */
+		serial4 = &uart8;   /* Hashboard 4 */
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	memory@c0000000 {
+		device_type = "memory";
+		reg = <0xc0000000 0x10000000>;
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+	};
+
+	/*
+	 * PCB:     S2
+	 * SCH:     USR_BTN -> S2 (PTS645VL83-2 LFS)
+	 * SoC:     GPIOG -> PG7 -> gpio[103] (IN)
+	 * Driver:  /sys/bus/platform/drivers/gpio-keys
+	 */
+
+	/*
+	 * PCB:     D9
+	 * SCH:     USR_IFC -> BIVAR_HC301
+	 * SoC:     GPIOA -> PA10 -> gpio[10] (OUT)
+	 *          GPIOF -> PF7 -> gpio[87] (OUT)
+	 * Driver:  /sys/bus/platform/drivers/leds-gpio
+	 */
+	leds {
+		compatible = "gpio-leds";
+
+		/*
+		 * SCH:     LED_GRN
+		 * Device:  /sys/class/leds/bcb:green:status
+		 *          /sys/devices/platform/leds/leds/bcb:green:status
+		 */
+		status-led {
+			label = "bcb:green:status";
+			gpios = <&gpioa 10 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "none";
+			default-state = "off";
+		};
+
+		/*
+		 * SCH:     LED_RED
+		 * Device:  /sys/class/leds/bcb:red:fault
+		 *          /sys/devices/platform/leds/leds/bcb:red:fault
+		 */
+		fault-led {
+			label = "bcb:red:fault";
+			gpios = <&gpiof 7 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "none";
+			default-state = "off";
+		};
+	};
+
+	v3v3: regulator-v3v3 {
+		compatible = "regulator-fixed";
+		regulator-name = "v3v3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+	};
+};
+
+&crc1 {
+	status = "okay";
+};
+
+&dma1 {
+	status = "okay";
+	sram = <&dma_pool>;
+};
+
+&dma2 {
+	status = "disabled";
+	sram = <&dma_pool>;
+};
+
+&dmamux1 {
+	status = "okay";
+	dma-masters = <&dma1>;
+	dma-channels = <8>;
+};
+
+&dts {
+	status = "okay";
+};
+
+&ethernet0 {
+	status = "okay";
+	pinctrl-0 = <&eth1_pins_mx>;
+	pinctrl-1 = <&eth1_sleep_pins_mx>;
+	pinctrl-names = "default", "sleep";
+	phy-mode = "rmii";
+	max-speed = <100>;
+	phy-handle = <&phy0>;
+
+	mdio0 {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		compatible = "snps,dwmac-mdio";
+		phy0: ethernet-phy@0 {
+			reg = <0>;
+			reset-gpios = <&gpioc 0 GPIO_ACTIVE_LOW>;
+			reset-assert-us = <1000>;
+			reset-deassert-us = <2000>;
+			smsc,disable-energy-detect;
+		};
+	};
+};
+
+&gpioa {
+	gpio-line-names =
+	/*PA0-PA3*/	    "FAN_RPM_A1", "ETH1_REF_CLK", "ETH1_MDIO", "FAN_RPM_B0",
+	/*PA4-PA7*/	    "", "FAN_RPM_A0", "FAN_RPM_B1", "ETH1_CRS_DV",
+	/*PA8-PA11*/	"SDMMC2_D4", "SDMMC2_D5", "GREEN_LED", "DEBUG_UART4_RX",
+	/*PA12-PA15*/	"DEBUG_UART4_TX", "", "", "";
+};
+
+&gpiob {
+	gpio-line-names =
+	/*PB0-PB3*/	    "", "", "", "SDMMC2_D2",
+	/*PB4-PB7*/	    "SDMMC2_D3", "HB1_UART5_RX", "HB1_UART5_TX", "",
+	/*PB8-PB11*/	"EEPROM_I2C4_SCL", "EEPROM_I2C4_SDA", "FAN_PWM_B_TIM2_CH3", "ETH1_TX_EN",
+	/*PB12-PB15*/	"", "ETH1_TXD1", "SDMMC2_D0", "SDMMC2_D1";
+};
+
+&gpioc {
+	gpio-line-names =
+	/*PC0-PC3*/	    "ETH1_PHY_RESET", "ETH1_MDC", "", "",
+	/*PC4-PC7*/	    "ETH1_RXD0", "ETH1_RXD1", "", "",
+	/*PC8-PC11*/	"SDMMC1_D0", "SDMMC1_D1", "SDMMC1_D2", "SDMMC1_D3",
+	/*PC12-PC15*/	"SDMMC1_CK", "", "", "";
+};
+
+&gpiod {
+	gpio-line-names =
+	/*PD0-PD3*/	    "", "", "SDMMC1_CMD", "SDMMC2_D7",
+	/*PD4-PD7*/	    "HB0_PLUG", "PWR_CONTROL", "", "PWR_I2C2_SCL",
+	/*PD8-PD11*/	"HB0_USART3_TX", "HB0_USART3_RX", "HB0_RESET", "",
+	/*PD12-PD15*/	"HB_I2C1_SCL", "HB_I2C1_SDA", "", "";
+};
+
+&gpioe {
+	gpio-line-names =
+	/*PE0-PE3*/	    "HB3_UART8_RX", "HB3_UART8_TX", "", "SDMMC2_CK",
+	/*PE4-PE7*/	    "", "SDMMC2_D6", "", "HB2_UART7_RX",
+	/*PE8-PE11*/	"HB2_UART7_TX", "", "HB2_PLUG", "HB3_RESET",
+	/*PE12-PE15*/	"", "HB3_PLUG", "FAN_PWM_A_TIM1_CH4", "";
+};
+
+&gpiof {
+	gpio-line-names =
+	/*PF0-PF3*/	    "", "", "", "",
+	/*PF4-PF7*/	    "", "", "", "RED_LED",
+	/*PF8-PF11*/	"HB2_RESET", "HB1_RESET", "", "";
+};
+
+&gpiog {
+	gpio-line-names =
+	/*PG0-PG3*/	    "", "", "", "",
+	/*PG4-PG7*/	    "", "", "SDMMC2_CMD", "USR_BTN",
+	/*PG8-PG11*/	"ETH1_CLK", "", "HB1_PLUG", "",
+	/*PG12-PG15*/	"", "ETH1_TXD0", "", "PWR_I2C2_SDA";
+};
+
+&gpioh {
+	gpio-line-names =
+	/*PH0-PH1*/	    "", "";
+};
+
+&hash1 {
+	status = "okay";
+};
+
+/*
+ * PCB:     Hashboard 1-4
+ * SCH:     HB[0:3] - CON7[A:D]
+ *              I2C1_SDA -> pin[3]
+ *              I2C1_SCL -> pin[4]
+ * SoC:     I2C1_SDA -> PD13 -> gpio[61]
+ *          I2C1_SCL -> PD12 -> gpio[60]
+ * Driver:  /sys/bus/platform/drivers/stm32f7-i2c
+ * Device:  /sys/class/i2c-dev/i2c-0
+ *          /sys/devices/platform/soc/40012000.i2c/i2c-0/i2c-dev/i2c-0
+ *          /dev/i2c-0
+ */
+&i2c1 {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&i2c1_pins_mx>;
+	pinctrl-1 = <&i2c1_sleep_pins_mx>;
+	status = "okay";
+};
+
+/*
+ * PCB:     PSU
+ * SCH:     PWR_COM - CON8
+ *              SDA -> pin[5]
+ *              SCL -> pin[6]
+ * SoC:     I2C2_SDA -> PG15 -> gpio[111]
+ *          I2C2_SCL -> PD7 -> gpio[55]
+ * Driver:  /sys/bus/platform/drivers/stm32f7-i2c
+ * Device:  /sys/class/i2c-dev/i2c-1
+ *          /sys/devices/platform/soc/40013000.i2c/i2c-1/i2c-dev/i2c-1
+ *          /dev/i2c-1
+ */
+&i2c2 {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&i2c2_pins_mx>;
+	pinctrl-1 = <&i2c2_sleep_pins_mx>;
+	status = "disabled";
+};
+
+/*
+ * PCB:     EEPROM
+ * SCH:     CON9
+ *              SDA -> pin[2]
+ *              SCL -> pin[1]
+ * SoC:     I2C4_SDA -> PB9 -> gpio[25]
+ *          I2C4_SCL -> PB8 -> gpio[24]
+ */
+&i2c4 {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&i2c4_pins_mx>;
+	pinctrl-1 = <&i2c4_sleep_pins_mx>;
+	status = "disabled";
+};
+
+/*
+ * Watchdog
+ */
+&iwdg2 {
+	timeout-sec = <32>;
+	status = "okay";
+};
+
+/*
+ * Random Number Generator
+ */
+&rng1 {
+	status = "okay";
+};
+
+/*
+ * Real Time Clock
+ */
+&rtc {
+	status = "okay";
+};
+
+/*
+ * SD card
+ */
+&sdmmc1 {
+	pinctrl-names = "default", "opendrain", "sleep";
+	pinctrl-0 = <&sdmmc1_pins_mx>;
+	pinctrl-1 = <&sdmmc1_opendrain_pins_mx>;
+	pinctrl-2 = <&sdmmc1_sleep_pins_mx>;
+	broken-cd;
+	st,neg-edge;
+	bus-width = <4>;
+	vmmc-supply = <&v3v3>;
+	status = "okay";
+};
+
+/*
+ * eMMC
+ */
+&sdmmc2 {
+	pinctrl-names = "default", "opendrain", "sleep";
+	pinctrl-0 = <&sdmmc2_pins_mx>;
+	pinctrl-1 = <&sdmmc2_opendrain_pins_mx>;
+	pinctrl-2 = <&sdmmc2_sleep_pins_mx>;
+	non-removable;
+	no-sd;
+	no-sdio;
+	st,neg-edge;
+	bus-width = <8>;
+	mmc-ddr-3_3v;
+	vmmc-supply = <&v3v3>;
+	vqmmc-supply = <&v3v3>;
+	status = "okay";
+};
+
+/*
+ * SRAM memory
+ */
+&sram {
+	dma_pool: dma_pool@0 {
+		reg = <0x50000 0x10000>;
+		pool;
+	};
+};
+
+/*
+ * PCB:     Fan 1/2 - IN
+ * SCH:     PWM_A -> CON[1:2]
+ * SoC:     TIM1_CH4 -> PE14 -> gpio[78]
+ * Driver:  /sys/bus/platform/drivers/stm32-pwm
+ * Device:  /sys/class/pwm/pwmchip4/pwm3
+ *          /sys/devices/platform/soc/44000000.timer/44000000.timer:pwm/pwm/pwmchip4/pwm3
+ */
+&timers1 {
+	status = "okay";
+	pwm {
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&tim1_pwm_pins_mx>;
+		pinctrl-1 = <&tim1_pwm_sleep_pins_mx>;
+		status = "okay";
+	};
+};
+
+/*
+ * PCB:     Fan 3/4 - OUT
+ * SCH:     PWM_B -> CON[3:4]
+ * SoC:     TIM2_CH3 -> PB10 -> gpio[26]
+ * Driver:  /sys/bus/platform/drivers/stm32-pwm
+ * Device:  /sys/class/pwm/pwmchip0/pwm2
+ *          /sys/devices/platform/soc/40000000.timer/40000000.timer:pwm/pwm/pwmchip0/pwm2
+ */
+&timers2 {
+	status = "okay";
+	pwm {
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&tim2_pwm_pins_mx>;
+		pinctrl-1 = <&tim2_pwm_sleep_pins_mx>;
+		status = "okay";
+	};
+};
+
+/*
+ * PCB:     GND TX RX
+ * SCH:     Debug - CON10
+ * SoC:     UART4_RX -> PA11 -> gpio[11]
+ *          UART4_TX -> PA12 -> gpio[12]
+ * Driver:  /sys/bus/platform/drivers/stm32-usart
+ * Device:  /sys/class/tty/ttySTM0
+ *          /sys/devices/platform/soc/40010000.serial/tty/ttySTM0
+ *          /dev/ttySTM0
+ */
+&uart4 {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&uart4_pins_mx>;
+	pinctrl-1 = <&uart4_sleep_pins_mx>;
+	status = "okay";
+};
+
+/*
+ * PCB:     Hashboard 2
+ * SCH:     HB1 - CON7B
+ *              HB_RXD -> pin[12]
+ *              HB_TXD -> pin[11]
+ * SoC:     UART5_RX -> PB5 -> gpio[21]
+ *          UART5_TX -> PB6 -> gpio[22]
+ * Driver:  /sys/bus/platform/drivers/stm32-usart
+ * Device:  /sys/class/tty/ttySTM2
+ *          /sys/devices/platform/soc/40011000.serial/tty/ttySTM2
+ *          /dev/ttySTM2
+ */
+&uart5 {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&uart5_pins_mx>;
+	pinctrl-1 = <&uart5_sleep_pins_mx>;
+	status = "okay";
+};
+
+/*
+ * PCB:     Hashboard 3
+ * SCH:     HB2 - CON7C
+ *              HB_RXD -> pin[12]
+ *              HB_TXD -> pin[11]
+ * SoC:     UART7_RX -> PE7 -> gpio[71]
+ *          UART7_TX -> PE8 -> gpio[72]
+ * Driver:  /sys/bus/platform/drivers/stm32-usart
+ * Device:  /sys/class/tty/ttySTM3
+ *          /sys/devices/platform/soc/40018000.serial/tty/ttySTM3
+ *          /dev/ttySTM3
+ */
+&uart7 {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&uart7_pins_mx>;
+	pinctrl-1 = <&uart7_sleep_pins_mx>;
+	status = "okay";
+};
+
+/*
+ * PCB:     Hashboard 4
+ * SCH:     HB3 - CON7D
+ *              HB_RXD -> pin[12]
+ *              HB_TXD -> pin[11]
+ * SoC:     UART8_RX -> PE0 -> gpio[64]
+ *          UART8_TX -> PE1 -> gpio[65]
+ * Driver:  /sys/bus/platform/drivers/stm32-usart
+ * Device:  /sys/class/tty/ttySTM4
+ *          /sys/devices/platform/soc/40019000.serial/tty/ttySTM4
+ *          /dev/ttySTM4
+ */
+&uart8 {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&uart8_pins_mx>;
+	pinctrl-1 = <&uart8_sleep_pins_mx>;
+	status = "okay";
+};
+
+/*
+ * PCB:     Hashboard 1
+ * SCH:     HB0 - CON7A
+ *              HB_RXD -> pin[12]
+ *              HB_TXD -> pin[11]
+ * SoC:     USART3_RX -> PD9 -> gpio[57]
+ *          USART3_TX -> PD8 -> gpio[56]
+ * Driver:  /sys/bus/platform/drivers/stm32-usart
+ * Device:  /sys/class/tty/ttySTM1
+ *          /sys/devices/platform/soc/4000f000.serial/tty/ttySTM1
+ *          /dev/ttySTM1
+ */
+&usart3 {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&usart3_pins_mx>;
+	pinctrl-1 = <&usart3_sleep_pins_mx>;
+	status = "okay";
+};
