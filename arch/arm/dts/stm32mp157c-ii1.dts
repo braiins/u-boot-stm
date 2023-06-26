@@ -40,6 +40,8 @@
 		i2c0 = &i2c1;
 		i2c1 = &i2c2;
 		i2c2 = &i2c4;
+		mmc0 = &sdmmc2;     /* eMMC */
+		mmc1 = &sdmmc1;     /* SD card */
 		serial0 = &uart4;   /* DEBUG */
 		serial1 = &usart3;  /* Hashboard 1 */
 		serial2 = &uart5;   /* Hashboard 2 */
