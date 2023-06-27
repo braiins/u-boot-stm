@@ -120,19 +120,11 @@
 };
 
 &dma1 {
-	status = "okay";
 	sram = <&dma_pool>;
 };
 
 &dma2 {
-	status = "disabled";
 	sram = <&dma_pool>;
-};
-
-&dmamux1 {
-	status = "okay";
-	dma-masters = <&dma1>;
-	dma-channels = <8>;
 };
 
 &dts {
@@ -276,6 +268,8 @@
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&i2c4_pins_mx>;
 	pinctrl-1 = <&i2c4_sleep_pins_mx>;
+	/delete-property/dmas;
+	/delete-property/dma-names;
 	status = "disabled";
 };
 
@@ -354,7 +348,11 @@
  *          /sys/devices/platform/soc/44000000.timer/44000000.timer:pwm/pwm/pwmchip4/pwm3
  */
 &timers1 {
+	dmas = <&dmamux1 14 0x400 0x80000001>,
+	       <&dmamux1 15 0x400 0x80000001>;
+	dma-names = "ch4", "up";
 	status = "okay";
+
 	pwm {
 		pinctrl-names = "default", "sleep";
 		pinctrl-0 = <&tim1_pwm_pins_mx>;
@@ -372,7 +370,11 @@
  *          /sys/devices/platform/soc/40000000.timer/40000000.timer:pwm/pwm/pwmchip0/pwm2
  */
 &timers2 {
+	dmas = <&dmamux1 20 0x400 0x80000001>,
+	       <&dmamux1 22 0x400 0x80000001>;
+	dma-names = "ch3", "up";
 	status = "okay";
+
 	pwm {
 		pinctrl-names = "default", "sleep";
 		pinctrl-0 = <&tim2_pwm_pins_mx>;
