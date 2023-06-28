@@ -15,7 +15,7 @@ CONFIG_FIT=y
 CONFIG_BOOTDELAY=1
 CONFIG_USE_BOOTARGS=y
 CONFIG_BOOTARGS="root=/dev/mmcblk1p4 rootwait rw earlyprintk console=ttySTM0,115200"
-CONFIG_BOOTCOMMAND="ext4load mmc $boot_instance:4 $kernel_addr_r boot/zImage && ext4load mmc $boot_instance:4 $fdt_addr_r boot/stm32mp157c-ii1.dtb && bootz $kernel_addr_r - $fdt_addr_r"
+CONFIG_BOOTCOMMAND="sqfsload mmc $boot_instance:4 $kernel_addr_r boot/zImage && sqfsload mmc $boot_instance:4 $fdt_addr_r boot/stm32mp157c-ii1.dtb && bootz $kernel_addr_r - $fdt_addr_r"
 CONFIG_FDT_SIMPLEFB=y
 CONFIG_SYS_PROMPT="STM32MP> "
 CONFIG_CMD_ADTIMG=y
@@ -44,6 +44,7 @@ CONFIG_CMD_TIMER=y
 CONFIG_CMD_PMIC=y
 CONFIG_CMD_REGULATOR=y
 CONFIG_CMD_EXT4_WRITE=y
+CONFIG_CMD_SQUASHFS=y
 CONFIG_CMD_MTDPARTS=y
 CONFIG_CMD_UBI=y
 CONFIG_ENV_IS_NOWHERE=y
