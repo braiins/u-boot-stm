@@ -101,6 +101,8 @@ static int sqfs_zstd_decompress(struct squashfs_ctxt *ctxt, void *dest,
 
 	wsize = ZSTD_DCtxWorkspaceBound();
 	ctx = ZSTD_initDCtx(ctxt->zstd_workspace, wsize);
+	if (!ctx)
+		return -EINVAL;
 	ret = ZSTD_decompressDCtx(ctx, dest, dest_len, source, src_len);
 
 	return ZSTD_isError(ret);
