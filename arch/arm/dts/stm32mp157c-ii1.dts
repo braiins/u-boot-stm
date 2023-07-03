@@ -25,6 +25,8 @@
 
 /dts-v1/;
 
+#include <dt-bindings/input/input.h>
+
 #include "stm32mp157.dtsi"
 #include "stm32mp15xc.dtsi"
 #include "stm32mp157c-ii1-pinctrl.dtsi"
@@ -70,6 +72,15 @@
 	 * SoC:     GPIOG -> PG7 -> gpio[103] (IN)
 	 * Driver:  /sys/bus/platform/drivers/gpio-keys
 	 */
+	keys {
+		compatible = "gpio-keys";
+
+		ip-report {
+			label = "ip_report";
+			linux,code = <BTN_0>;
+			gpios = <&gpiog 7 GPIO_ACTIVE_LOW>;
+		};
+	};
 
 	/*
 	 * PCB:     D9
