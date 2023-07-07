@@ -1,13 +1,13 @@
-if TARGET_ST_STM32MP15x
+if TARGET_BRAIINS_II1_STM
 
 config SYS_BOARD
-	default "stm32mp1"
+	default "ii1-stm"
 
 config SYS_VENDOR
-	default "st"
+	default "braiins"
 
 config SYS_CONFIG_NAME
-	default "stm32mp1"
+	default "ii1-stm"
 
 source "board/st/common/Kconfig"
 endif

@@ -92,6 +92,19 @@ config TARGET_DH_STM32MP1_PDK2
 	help
 		Target the DH PDK2 development kit with STM32MP15x SoM.
 
+config TARGET_BRAIINS_II1_STM
+	bool "Braiins STM32MP157C (ii1) Control Board"
+	select STM32MP15x
+	imply BOOTCOUNT_LIMIT
+	imply BOOTSTAGE
+	imply CMD_BOOTCOUNT
+	imply CMD_BOOTSTAGE
+	imply DISABLE_CONSOLE
+	imply PRE_CONSOLE_BUFFER
+	imply SILENT_CONSOLE
+	help
+		Target the Braiins ii1-stm control board with STM32MP157C SoC.
+
 endchoice
 
 config SYS_TEXT_BASE
@@ -172,5 +185,6 @@ endif
 source "arch/arm/mach-stm32mp/cmd_stm32prog/Kconfig"
 source "board/st/stm32mp1/Kconfig"
 source "board/dhelectronics/dh_stm32mp1/Kconfig"
+source "board/braiins/ii1-stm/Kconfig"
 
 endif
