@@ -3,8 +3,4 @@
 # Copyright (C) 2018, STMicroelectronics - All Rights Reserved
 #
 
-ifdef CONFIG_SPL_BUILD
-obj-y += spl.o
-else
 obj-y += stm32mp1.o
-endif
