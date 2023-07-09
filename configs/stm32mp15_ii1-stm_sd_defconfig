@@ -12,9 +12,7 @@ CONFIG_DEFAULT_DEVICE_TREE="stm32mp157c-ii1"
 CONFIG_DISTRO_DEFAULTS=y
 CONFIG_FIT=y
 CONFIG_BOOTDELAY=1
-CONFIG_USE_BOOTARGS=y
-CONFIG_BOOTARGS="root=/dev/mmcblk1p4 rootwait rw earlyprintk console=ttySTM0,115200"
-CONFIG_BOOTCOMMAND="sqfsload mmc $boot_instance:4 $kernel_addr_r boot/zImage && sqfsload mmc $boot_instance:4 $fdt_addr_r boot/stm32mp157c-ii1.dtb && bootz $kernel_addr_r - $fdt_addr_r"
+CONFIG_BOOTCOMMAND="run bootcmd_bos"
 CONFIG_SYS_PROMPT="STM32MP> "
 # CONFIG_BOOTM_NETBSD is not set
 # CONFIG_BOOTM_PLAN9 is not set
