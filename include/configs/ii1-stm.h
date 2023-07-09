@@ -39,33 +39,15 @@
 #define CONFIG_INITRD_TAG
 
 /*
- * For booting Linux, use the first 256 MB of memory, since this is
- * the maximum mapped by the Linux kernel during initialization.
+ * For booting Linux, use the first 128 MB of memory.
  */
-#define CONFIG_SYS_BOOTMAPSZ		SZ_256M
+#define CONFIG_SYS_BOOTMAPSZ		SZ_128M
 
 /* Extend size of kernel image for uncompression */
 #define CONFIG_SYS_BOOTM_LEN		SZ_32M
 
-/* SPL support */
-#ifdef CONFIG_SPL
-/* SPL use DDR */
-#define CONFIG_SPL_BSS_START_ADDR	0xC0200000
-#define CONFIG_SPL_BSS_MAX_SIZE		0x00100000
-#define CONFIG_SYS_SPL_MALLOC_START	0xC0300000
-#define CONFIG_SYS_SPL_MALLOC_SIZE	0x00100000
-
-/* limit SYSRAM usage to first 128 KB */
-#define CONFIG_SPL_MAX_SIZE		0x00020000
-#define CONFIG_SPL_STACK		(STM32_SYSRAM_BASE + \
-					 STM32_SYSRAM_SIZE)
-#endif /* #ifdef CONFIG_SPL */
 /*MMC SD*/
 #define CONFIG_SYS_MMC_MAX_DEVICE	3
-
-/* NAND support */
-#define CONFIG_SYS_NAND_ONFI_DETECTION
-#define CONFIG_SYS_MAX_NAND_DEVICE	1
 
 /* Ethernet need */
 #ifdef CONFIG_DWC_ETH_QOS
@@ -73,13 +55,6 @@
 #define CONFIG_SERVERIP                 192.168.1.1
 #define CONFIG_BOOTP_SERVERIP
 #define CONFIG_SYS_AUTOLOAD		"no"
-#endif
-
-#ifdef CONFIG_DM_VIDEO
-#define CONFIG_VIDEO_BMP_RLE8
-#define CONFIG_BMP_16BPP
-#define CONFIG_BMP_24BPP
-#define CONFIG_BMP_32BPP
 #endif
 
 /*****************************************************************************/

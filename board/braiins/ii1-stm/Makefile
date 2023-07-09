@@ -4,5 +4,3 @@
 #
 
 obj-y += stm32mp1.o
-
-obj-$(CONFIG_CMD_STBOARD) += ../../st/common/cmd_stboard.o
