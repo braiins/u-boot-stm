@@ -3,4 +3,4 @@
 # Copyright (C) 2018, STMicroelectronics - All Rights Reserved
 #
 
-obj-y += stm32mp1.o
+obj-y += ii1-stm.o
