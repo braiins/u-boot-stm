@@ -299,15 +299,16 @@ static int do_setexpr(struct cmd_tbl *cmdtp, int flag, int argc,
 	int w;
 
 	/*
-	 * We take 3, 5, or 6 arguments:
+	 * We take 3, 4, 5, or 6 arguments:
 	 * 3 : setexpr name value
+	 * 4 : setexpr name dec value
 	 * 5 : setexpr name val1 op val2
 	 *     setexpr name [g]sub r s
 	 * 6 : setexpr name [g]sub r s t
 	 */
 
 	/* > 6 already tested by max command args */
-	if ((argc < 3) || (argc == 4))
+	if (argc < 3)
 		return CMD_RET_USAGE;
 
 	w = cmd_get_data_size(argv[0], 4);
@@ -318,6 +319,13 @@ static int do_setexpr(struct cmd_tbl *cmdtp, int flag, int argc,
 	if (argc == 3) {
 		env_set_hex(argv[1], a);
 		return 0;
+	}
+
+	/* hexadecimal to decimal conversion: "setexpr name dec value" */
+	if (argc == 4 && (strcmp(argv[2], "dec") == 0)) {
+		w = cmd_get_data_size(argv[3], 4);
+		a = get_arg(argv[3], w);
+		return env_set_ulong(argv[1], a);
 	}
 
 	/* 5 or 6 args (6 args only with [g]sub) */
@@ -397,4 +405,8 @@ U_BOOT_CMD(
 	"setexpr name sub r s [t]\n"
 	"    - Just like gsub(), but replace only the first matching substring"
 #endif
+	"\n"
+	"setexpr name dec [*]value\n"
+	"    - set environment variable 'name' to the result of the decimal\n"
+	"      conversion of [*]value.\n"
 );
