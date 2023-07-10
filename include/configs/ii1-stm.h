@@ -84,6 +84,50 @@
 
 #if !defined(CONFIG_SPL_BUILD)
 
+#define UUID_GPT_EMMC_DISK	"b5604747-268c-43d1-b828-de0cb3fb47e0"
+#define UUID_GPT_SD_DISK	"be7fb69a-5d53-4500-bd3b-2e53a7e6eeeb"
+
+#define PARTS_UUID_GPT_EMMC \
+	"uuid_gpt_emmc_disk=b5604747-268c-43d1-b828-de0cb3fb47e0\0" \
+	"uuid_gpt_emmc_fip=d4b9b338-c25a-4e7d-b7a7-a6ddb9baeb70\0" \
+	"uuid_gpt_emmc_rootfs1=83c998dd-9f28-455e-86b3-1b379174ff28\0" \
+	"uuid_gpt_emmc_rootfs2=b7f7cbe9-e4f5-430f-bc4c-4ca78e8336a0\0" \
+	"uuid_gpt_emmc_nvdata=9e51faf6-4968-4f73-b47f-d7f08708bfcb\0"
+
+#define PARTS_UUID_GPT_SD \
+	"uuid_gpt_sd_disk=be7fb69a-5d53-4500-bd3b-2e53a7e6eeeb\0" \
+	"uuid_gpt_sd_fsbl1=c9d5d7e5-39a2-4d0e-b809-a5b055aad7bb\0" \
+	"uuid_gpt_sd_fsbl2=f410f718-415d-4bcb-9140-347f9d0fdf59\0" \
+	"uuid_gpt_sd_fip=98616d47-3eba-4222-a9fb-02205041e029\0" \
+	"uuid_gpt_sd_vendor=950bfac3-e6d6-4241-a2b2-b96ae7d3b3fb\0" \
+	"uuid_gpt_sd_rootfs=aa9471f7-eea9-45d4-89d2-9c2dd99ef464\0" \
+	"uuid_gpt_sd_nvdata=29988c36-5ae4-48e8-afe9-52dbc535abe7\0"
+
+#ifdef CONFIG_BOOT_INIT_EMMC
+/* eMMC initialization */
+#define UUID_GPT_DISK UUID_GPT_EMMC_DISK
+
+#define PARTS_DEFAULT \
+	"uuid_disk=${uuid_gpt_disk};" \
+	"name=fip,start=1MiB,size=15MiB,uuid=${uuid_gpt_emmc_fip};" \
+	"name=rootfs1,size=160MiB,uuid=${uuid_gpt_emmc_rootfs1};" \
+	"name=rootfs2,size=160MiB,uuid=${uuid_gpt_emmc_rootfs2};" \
+	"name=nvdata,size=-,uuid=${uuid_gpt_emmc_nvdata}"
+#endif /* ifdef CONFIG_BOOT_INIT_EMMC */
+
+#ifdef CONFIG_BOOT_INIT_SD
+/* SD card initialization */
+#define UUID_GPT_DISK UUID_GPT_SD_DISK
+
+#define PARTS_DEFAULT \
+	"uuid_disk=${uuid_gpt_disk};" \
+	"name=fsbl1,start=4MiB,size=1MiB,uuid=${uuid_gpt_sd_fsbl1};" \
+	"name=fsbl2,size=1MiB,uuid=${uuid_gpt_sd_fsbl2};" \
+	"name=fip,size=6MiB,uuid=${uuid_gpt_sd_fip};" \
+	"name=rootfs,size=160MiB,uuid=${uuid_gpt_sd_rootfs};" \
+	"name=nvdata,size=-,uuid=${uuid_gpt_sd_nvdata}"
+#endif /* ifdef CONFIG_BOOT_INIT_SD */
+
 #define SET_ROOTFS_PART "set_rootfs_part=" \
 	"part number mmc $boot_instance rootfs${rootfs_index} rootfs_part && " \
 	"setexpr rootfs_part dec $rootfs_part && " \
@@ -108,6 +152,10 @@
 	"pxefile_addr_r=0xc4200000\0" \
 	"ramdisk_addr_r=0xc4400000\0" \
 	"script=boot.scr\0" \
+	PARTS_UUID_GPT_EMMC \
+	PARTS_UUID_GPT_SD \
+	"uuid_gpt_disk="UUID_GPT_DISK"\0" \
+	"partitions="PARTS_DEFAULT"\0" \
 	SET_ROOTFS_PART \
 	BOOTCMD_BOS
 

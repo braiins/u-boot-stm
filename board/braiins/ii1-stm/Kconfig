@@ -9,4 +9,15 @@ config SYS_VENDOR
 config SYS_CONFIG_NAME
 	default "ii1-stm"
 
+choice
+	prompt "Boot initialization"
+
+config BOOT_INIT_EMMC
+	bool "eMMC initialization"
+
+config BOOT_INIT_SD
+	bool "SD card initialization"
+
+endchoice
+
 endif
