@@ -89,19 +89,11 @@
 	"setexpr rootfs_part dec $rootfs_part && " \
 	"\0"
 
-#define SET_KERNEL_ROOTFS "set_kernel_rootfs=" \
-	"setenv kernel_rootfs /dev/mmcblk${boot_instance}p${rootfs_part}" \
-	"\0"
-
-#define SET_BOOTARGS "set_bootargs=" \
-	"setenv bootargs root=${kernel_rootfs} rootwait rw earlyprintk console=ttySTM0,115200" \
-	"\0"
-
 #define BOOTCMD_BOS "bootcmd_bos=" \
-	"run set_rootfs_part set_kernel_rootfs set_bootargs && " \
-	"load mmc ${boot_instance}:${rootfs_part} $kernel_addr_r boot/zImage && " \
-	"load mmc ${boot_instance}:${rootfs_part} $fdt_addr_r boot/stm32mp157c-ii1.dtb && " \
-	"bootz $kernel_addr_r - $fdt_addr_r" \
+	"run set_rootfs_part && " \
+	"echo Loading U-Boot script... && " \
+	"load mmc ${boot_instance}:${rootfs_part} $scriptaddr boot/$script && " \
+	"source $scriptaddr" \
 	"\0"
 
 /*
@@ -115,9 +107,8 @@
 	"scriptaddr=0xc4100000\0" \
 	"pxefile_addr_r=0xc4200000\0" \
 	"ramdisk_addr_r=0xc4400000\0" \
+	"script=boot.scr\0" \
 	SET_ROOTFS_PART \
-	SET_KERNEL_ROOTFS \
-	SET_BOOTARGS \
 	BOOTCMD_BOS
 
 #endif /* ifndef CONFIG_SPL_BUILD */
