@@ -84,6 +84,9 @@
 
 #define SYSCFG_CMPENSETR_MPU_EN		BIT(0)
 
+#define SDMMC_EMMC_INSTANCE	1 /* mmc0 = &sdmmc2; */
+#define SDMMC_SD_INSTANCE	0 /* mmc1 = &sdmmc1; */
+
 /*
  * Get a global data pointer
  */
@@ -328,6 +331,29 @@ static void sysconf_init(void)
 	clrbits_le32(syscfg + SYSCFG_CMPCR, SYSCFG_CMPCR_SW_CTRL);
 }
 
+static struct udevice *mmc_get_dev(unsigned int instance)
+{
+	struct udevice *dev;
+	char cmd[20];
+	const u32 sdmmc_addr[] = {
+		STM32_SDMMC1_BASE,
+		STM32_SDMMC2_BASE,
+		STM32_SDMMC3_BASE
+	};
+
+	if (instance > ARRAY_SIZE(sdmmc_addr))
+		return NULL;
+
+	/* search associated sdmmc node in devicetree */
+	snprintf(cmd, sizeof(cmd), "sdmmc@%x", sdmmc_addr[instance]);
+	if (uclass_get_device_by_name(UCLASS_MMC, cmd, &dev)) {
+		log_err("mmc%d = %s not found in device tree!\n", instance, cmd);
+		return NULL;
+	}
+
+	return dev;
+}
+
 /* board dependent setup after realloc */
 int board_init(void)
 {
@@ -354,6 +380,7 @@ int board_init(void)
 
 int board_late_init(void)
 {
+	struct udevice *dev;
 	const void *fdt_compat;
 	int fdt_compat_len;
 	char dtb_name[256];
@@ -375,6 +402,10 @@ int board_late_init(void)
 				env_set("fdtfile", dtb_name);
 			}
 		}
+		dev = mmc_get_dev(SDMMC_EMMC_INSTANCE);
+		env_set_ulong("dev_emmc", dev ? dev->seq : -1);
+		dev = mmc_get_dev(SDMMC_SD_INSTANCE);
+		env_set_ulong("dev_sd", dev ? dev->seq : -1);
 	}
 
 	return 0;
@@ -520,24 +551,9 @@ int mmc_get_boot(void)
 	struct udevice *dev;
 	u32 boot_mode = get_bootmode();
 	unsigned int instance = (boot_mode & TAMP_BOOT_INSTANCE_MASK) - 1;
-	char cmd[20];
-	const u32 sdmmc_addr[] = {
-		STM32_SDMMC1_BASE,
-		STM32_SDMMC2_BASE,
-		STM32_SDMMC3_BASE
-	};
 
-	if (instance > ARRAY_SIZE(sdmmc_addr))
-		return 0;
-
-	/* search associated sdmmc node in devicetree */
-	snprintf(cmd, sizeof(cmd), "sdmmc@%x", sdmmc_addr[instance]);
-	if (uclass_get_device_by_name(UCLASS_MMC, cmd, &dev)) {
-		log_err("mmc%d = %s not found in device tree!\n", instance, cmd);
-		return 0;
-	}
-
-	return dev->seq;
+	dev = mmc_get_dev(instance);
+	return dev ? dev->seq : 0;
 };
 
 const char *env_ext4_get_dev_part(void)

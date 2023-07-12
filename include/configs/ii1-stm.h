@@ -103,6 +103,12 @@
 	"uuid_gpt_sd_rootfs=aa9471f7-eea9-45d4-89d2-9c2dd99ef464\0" \
 	"uuid_gpt_sd_nvdata=29988c36-5ae4-48e8-afe9-52dbc535abe7\0"
 
+#define EMMC_HWPART_USER	"0"
+#define EMMC_HWPART_BOOT0	"1"
+#define EMMC_HWPART_BOOT1	"2"
+#define EMMC_HWPART_RPMB	"3"
+#define EMMC_HWPART_GP1		"4"
+
 #ifdef CONFIG_BOOT_INIT_EMMC
 /* eMMC initialization */
 #define UUID_GPT_DISK UUID_GPT_EMMC_DISK
@@ -113,6 +119,25 @@
 	"name=rootfs1,size=160MiB,uuid=${uuid_gpt_emmc_rootfs1};" \
 	"name=rootfs2,size=160MiB,uuid=${uuid_gpt_emmc_rootfs2};" \
 	"name=nvdata,size=-,uuid=${uuid_gpt_emmc_nvdata}"
+
+#define ROOTFS_INDEX "1"
+
+#define FACTORY_ENV \
+	"partitions="PARTS_DEFAULT"\0" \
+	"emmc_erase_blk=0x00004000\0" \
+	"emmc_erase_cnt=0x000a4000\0" \
+	"emmc_hwpart_factory_rootfs="EMMC_HWPART_GP1"\0" \
+	"emmc_factory_rootfs_blk=0x00000000\0" \
+	"emmc_factory_rootfs_cnt=0x00014000\0"
+
+#define FACTORY_INIT \
+	"part number mmc $dev_emmc rootfs${rootfs_index} rootfs_part && " \
+	"part start mmc $dev_emmc $rootfs_part rootfs_start && " \
+	"mmc dev $dev_emmc $emmc_hwpart_factory_rootfs && " \
+	"mmc read $loadaddr $emmc_factory_rootfs_blk $emmc_factory_rootfs_cnt && " \
+	"mmc dev $dev_emmc && " \
+	"mmc erase $emmc_erase_blk $emmc_erase_cnt && " \
+	"mmc write $loadaddr $rootfs_start $emmc_factory_rootfs_cnt && "
 #endif /* ifdef CONFIG_BOOT_INIT_EMMC */
 
 #ifdef CONFIG_BOOT_INIT_SD
@@ -126,6 +151,14 @@
 	"name=fip,size=6MiB,uuid=${uuid_gpt_sd_fip};" \
 	"name=rootfs,size=160MiB,uuid=${uuid_gpt_sd_rootfs};" \
 	"name=nvdata,size=-,uuid=${uuid_gpt_sd_nvdata}"
+
+#define ROOTFS_INDEX ""
+
+#define FACTORY_ENV \
+	"partitions="PARTS_DEFAULT"\0" \
+
+#define FACTORY_INIT \
+	""
 #endif /* ifdef CONFIG_BOOT_INIT_SD */
 
 #define SET_ROOTFS_PART "set_rootfs_part=" \
@@ -133,11 +166,31 @@
 	"setexpr rootfs_part dec $rootfs_part && " \
 	"\0"
 
-#define BOOTCMD_BOS "bootcmd_bos=" \
+#define BOOTCMD_DEFAULT "bootcmd_default=" \
 	"run set_rootfs_part && " \
 	"echo Loading U-Boot script... && " \
 	"load mmc ${boot_instance}:${rootfs_part} $scriptaddr boot/$script && " \
 	"source $scriptaddr" \
+	"\0"
+
+#define PRESERVE_DYNAMIC_VARIABLES \
+	"boot_device=$boot_device && " \
+	"boot_instance=$boot_instance && " \
+	"board_name=$board_name && " \
+	"dev_emmc=$dev_emmc && " \
+	"dev_sd=$dev_sd && " \
+	"fdtfile=$fdtfile && "
+
+#define BOOTCMD_BOS "bootcmd_bos=" \
+	"echo Factory initialization...; " \
+	"gpt write mmc $boot_instance $partitions && " \
+	FACTORY_INIT \
+	PRESERVE_DYNAMIC_VARIABLES \
+	"env default -a && " \
+	"setenv bootcmd \"$bootcmd_default\" && " \
+	"env delete bootcmd_default bootcmd_bos && " \
+	"saveenv && " \
+	"boot" \
 	"\0"
 
 /*
@@ -155,8 +208,10 @@
 	PARTS_UUID_GPT_EMMC \
 	PARTS_UUID_GPT_SD \
 	"uuid_gpt_disk="UUID_GPT_DISK"\0" \
-	"partitions="PARTS_DEFAULT"\0" \
+	"rootfs_index="ROOTFS_INDEX"\0" \
+	FACTORY_ENV \
 	SET_ROOTFS_PART \
+	BOOTCMD_DEFAULT \
 	BOOTCMD_BOS
 
 #endif /* ifndef CONFIG_SPL_BUILD */
