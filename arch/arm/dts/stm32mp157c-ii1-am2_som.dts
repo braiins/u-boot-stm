@@ -8,13 +8,13 @@
 
 #include "stm32mp157.dtsi"
 #include "stm32mp15xa.dtsi"
-#include "stm32mp157c-ii1_som-pinctrl.dtsi"
+#include "stm32mp157c-ii1-am2_som-pinctrl.dtsi"
 #include "stm32mp15xxac-pinctrl.dtsi"
 #include "stm32mp15-m4-srm.dtsi"
 
 / {
-	model = "Braiins STM32MP157C (ii1) SoM Control Board";
-	compatible = "braiins,ii1-stm\0st,stm32mp157";
+	model = "Braiins STM32MP157C (ii1-am2) SoM Control Board";
+	compatible = "braiins,stm32mp157c-ii1-am2_som", "st,stm32mp157";
 
 	aliases {
 		ethernet0 = &ethernet0;

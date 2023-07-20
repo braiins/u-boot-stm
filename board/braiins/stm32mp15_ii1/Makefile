@@ -22,4 +22,4 @@
 # of such proprietary license or if you have any other questions, please
 # contact us at opensource@braiins.com.
 
-obj-y += ii1-stm.o
+obj-y += stm32mp15_ii1.o

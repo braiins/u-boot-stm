@@ -1,13 +1,13 @@
-if TARGET_BRAIINS_II1_STM
+if TARGET_BRAIINS_STM32MP15_II1
 
 config SYS_BOARD
-	default "ii1-stm"
+	default "stm32mp15_ii1"
 
 config SYS_VENDOR
 	default "braiins"
 
 config SYS_CONFIG_NAME
-	default "ii1-stm"
+	default "stm32mp15_ii1"
 
 choice
 	prompt "Boot initialization"
