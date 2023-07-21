@@ -193,7 +193,8 @@
 	"setenv bootcmd \"$bootcmd_default\" && " \
 	"env delete bootcmd_default bootcmd_bos && " \
 	"saveenv && " \
-	"setenv ethaddr $ethaddr && " \
+	"setenv set_ethaddr 'test -z \"$ethaddr\" || setenv ethaddr $ethaddr' && " \
+	"run set_ethaddr && " \
 	"boot" \
 	"\0"
 
