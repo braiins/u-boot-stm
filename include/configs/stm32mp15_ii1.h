@@ -163,7 +163,7 @@
 
 #define SET_ROOTFS_PART "set_rootfs_part=" \
 	"part number mmc $boot_instance rootfs${rootfs_index} rootfs_part && " \
-	"setexpr rootfs_part dec $rootfs_part && " \
+	"setexpr rootfs_part dec $rootfs_part" \
 	"\0"
 
 #define BOOTCMD_DEFAULT "bootcmd_default=" \
