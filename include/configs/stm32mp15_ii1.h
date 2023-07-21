@@ -174,11 +174,14 @@
 	"\0"
 
 #define PRESERVE_DYNAMIC_VARIABLES \
+	"board_name=$board_name && " \
 	"boot_device=$boot_device && " \
 	"boot_instance=$boot_instance && " \
-	"board_name=$board_name && " \
+	"bootcount=$bootcount && " \
 	"dev_emmc=$dev_emmc && " \
 	"dev_sd=$dev_sd && " \
+	"ethaddr=$ethaddr && " \
+	"fdtcontroladdr=$fdtcontroladdr && " \
 	"fdtfile=$fdtfile && "
 
 #define BOOTCMD_BOS "bootcmd_bos=" \
@@ -190,6 +193,7 @@
 	"setenv bootcmd \"$bootcmd_default\" && " \
 	"env delete bootcmd_default bootcmd_bos && " \
 	"saveenv && " \
+	"setenv ethaddr $ethaddr && " \
 	"boot" \
 	"\0"
 
