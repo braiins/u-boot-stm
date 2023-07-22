@@ -124,17 +124,20 @@
 #define ROOTFS_INDEX "2"
 
 #define FACTORY_ENV \
-	"partitions="PARTS_DEFAULT"\0" \
-	"emmc_erase_blk=0x00004000\0" \
-	"emmc_erase_cnt=0x000a4000\0" \
-	"emmc_hwpart_factory_rootfs="EMMC_HWPART_GP1"\0" \
-	"emmc_factory_rootfs_blk=0x00000000\0" \
-	"emmc_factory_rootfs_cnt=0x00014000\0"
+	"emmc_factory_env_hwpart="EMMC_HWPART_BOOT1"\0" \
+	"emmc_factory_env_blk=0x00001800\0" \
+	"emmc_factory_env_cnt=0x00000040\0" \
+	"emmc_factory_env_size=0x8000\0"
+
+#define FACTORY_ENV_IMPORT \
+	"mmc dev $dev_emmc $emmc_factory_env_hwpart && " \
+	"mmc read $scriptaddr $emmc_factory_env_blk $emmc_factory_env_cnt && " \
+	"env import -c $scriptaddr $emmc_factory_env_size && "
 
 #define FACTORY_INIT \
 	"part number mmc $dev_emmc rootfs${rootfs_index} rootfs_part && " \
 	"part start mmc $dev_emmc $rootfs_part rootfs_start && " \
-	"mmc dev $dev_emmc $emmc_hwpart_factory_rootfs && " \
+	"mmc dev $dev_emmc $emmc_factory_rootfs_hwpart && " \
 	"mmc read $loadaddr $emmc_factory_rootfs_blk $emmc_factory_rootfs_cnt && " \
 	"mmc dev $dev_emmc && " \
 	"mmc erase $emmc_erase_blk $emmc_erase_cnt && " \
@@ -157,6 +160,8 @@
 
 #define FACTORY_ENV \
 	"partitions="PARTS_DEFAULT"\0" \
+
+#define FACTORY_ENV_IMPORT ""
 
 #define FACTORY_INIT \
 	""
@@ -187,6 +192,7 @@
 
 #define BOOTCMD_BOS "bootcmd_bos=" \
 	"echo Factory initialization...; " \
+	FACTORY_ENV_IMPORT \
 	"gpt write mmc $boot_instance $partitions && " \
 	FACTORY_INIT \
 	PRESERVE_DYNAMIC_VARIABLES \
