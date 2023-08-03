@@ -120,8 +120,7 @@
 	"name=rootfs2,size=160MiB,uuid=${uuid_gpt_emmc_rootfs2};" \
 	"name=nvdata,size=-,uuid=${uuid_gpt_emmc_nvdata}"
 
-// FIXME: #BOS-1396 Revert index back to '1' for final firmware
-#define ROOTFS_INDEX "2"
+#define ROOTFS_INDEX "1"
 
 #define FACTORY_ENV \
 	"emmc_factory_env_hwpart="EMMC_HWPART_BOOT1"\0" \
