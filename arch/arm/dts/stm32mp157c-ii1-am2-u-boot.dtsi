@@ -42,6 +42,9 @@
 
 #ifndef CONFIG_TFABOOT
 &rcc {
+	st,hsi-cal;
+	st,csi-cal;
+	st,cal-sec = <60>;
 	st,clksrc = <
 		CLK_MPU_PLL1P
 		CLK_AXI_PLL2P
@@ -85,10 +88,10 @@
 		CLK_I2C12_HSI
 		CLK_I2C35_DISABLED
 		CLK_UART1_DISABLED
-		CLK_UART24_PCLK1
-		CLK_UART35_PCLK1
+		CLK_UART24_HSI
+		CLK_UART35_HSI
 		CLK_UART6_DISABLED
-		CLK_UART78_PCLK1
+		CLK_UART78_HSI
 		CLK_SPDIF_DISABLED
 		CLK_SAI1_DISABLED
 		CLK_SAI2_DISABLED
@@ -102,20 +105,20 @@
 	pll2: st,pll@1 {
 		compatible = "st,stm32mp1-pll";
 		reg = <1>;
-		cfg = <1 32 1 1 0 PQR(1,0,1)>;
-		frac = <0xaab>;
+		cfg = <2 65 1 1 0 PQR(1,0,1)>;
+		frac = <0x1400>;
 	};
 
 	pll3: st,pll@2 {
 		compatible = "st,stm32mp1-pll";
 		reg = <2>;
-		cfg = <1 49 2 11 1 PQR(1,1,0)>;
+		cfg = <1 49 2 11 52 PQR(1,1,0)>;
 	};
 
 	pll4: st,pll@3 {
 		compatible = "st,stm32mp1-pll";
 		reg = <3>;
-		cfg = <3 66 3 1 1 PQR(1,0,0)>;
+		cfg = <3 98 5 7 7 PQR(1,0,0)>;
 	};
 };
 
