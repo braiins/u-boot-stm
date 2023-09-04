@@ -133,11 +133,25 @@
 
 #define ROOTFS_INDEX "1"
 
+// TODO: BOS-1084 - Remove 'recovery_counter' from env not to trigger the recovery process
+#define DOWNGRADE_ENV "downgrade_env=" \
+	PRESERVE_DYNAMIC_VARIABLES \
+	"rootfs_index=$rootfs_index && " \
+	"env default -a && " \
+	"setenv bootcmd \"$bootcmd_default\" && " \
+	"env delete bootcmd_default bootcmd_bos rootfs_index && " \
+	"setenv rootfs_index $rootfs_index && " \
+	"saveenv && " \
+	"setenv set_ethaddr 'test -z \"$ethaddr\" || setenv ethaddr $ethaddr' && " \
+	"run set_ethaddr" \
+	"\0"
+
 #define FACTORY_ENV \
 	"emmc_factory_env_hwpart="EMMC_HWPART_BOOT1"\0" \
 	"emmc_factory_env_blk=0x00001800\0" \
 	"emmc_factory_env_cnt=0x00000040\0" \
-	"emmc_factory_env_size=0x8000\0"
+	"emmc_factory_env_size=0x8000\0" \
+	DOWNGRADE_ENV
 
 #define FACTORY_ENV_IMPORT \
 	"mmc dev $dev_emmc $emmc_factory_env_hwpart && " \
