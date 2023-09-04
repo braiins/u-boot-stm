@@ -109,6 +109,17 @@
 #define EMMC_HWPART_RPMB	"3"
 #define EMMC_HWPART_GP1		"4"
 
+#define PRESERVE_DYNAMIC_VARIABLES \
+	"board_name=$board_name && " \
+	"boot_device=$boot_device && " \
+	"boot_instance=$boot_instance && " \
+	"bootcount=$bootcount && " \
+	"dev_emmc=$dev_emmc && " \
+	"dev_sd=$dev_sd && " \
+	"ethaddr=$ethaddr && " \
+	"fdtcontroladdr=$fdtcontroladdr && " \
+	"fdtfile=$fdtfile && "
+
 #ifdef CONFIG_BOOT_INIT_EMMC
 /* eMMC initialization */
 #define UUID_GPT_DISK UUID_GPT_EMMC_DISK
@@ -177,17 +188,6 @@
 	"load mmc ${boot_instance}:${rootfs_part} $scriptaddr boot/$script && " \
 	"source $scriptaddr" \
 	"\0"
-
-#define PRESERVE_DYNAMIC_VARIABLES \
-	"board_name=$board_name && " \
-	"boot_device=$boot_device && " \
-	"boot_instance=$boot_instance && " \
-	"bootcount=$bootcount && " \
-	"dev_emmc=$dev_emmc && " \
-	"dev_sd=$dev_sd && " \
-	"ethaddr=$ethaddr && " \
-	"fdtcontroladdr=$fdtcontroladdr && " \
-	"fdtfile=$fdtfile && "
 
 #define BOOTCMD_BOS "bootcmd_bos=" \
 	"echo Factory initialization...; " \
