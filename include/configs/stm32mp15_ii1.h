@@ -139,7 +139,7 @@
 	"rootfs_index=$rootfs_index && " \
 	"env default -a && " \
 	"setenv bootcmd \"$bootcmd_default\" && " \
-	"env delete bootcmd_default bootcmd_bos rootfs_index && " \
+	"env delete bootcmd_default bootcmd_bos board_name rootfs_index && " \
 	"setenv rootfs_index $rootfs_index && " \
 	"saveenv && " \
 	"setenv set_ethaddr 'test -z \"$ethaddr\" || setenv ethaddr $ethaddr' && " \
@@ -211,7 +211,7 @@
 	PRESERVE_DYNAMIC_VARIABLES \
 	"env default -a && " \
 	"setenv bootcmd \"$bootcmd_default\" && " \
-	"env delete bootcmd_default bootcmd_bos && " \
+	"env delete bootcmd_default bootcmd_bos board_name && " \
 	"saveenv && " \
 	"setenv set_ethaddr 'test -z \"$ethaddr\" || setenv ethaddr $ethaddr' && " \
 	"run set_ethaddr && " \
