@@ -109,17 +109,6 @@
 #define EMMC_HWPART_RPMB	"3"
 #define EMMC_HWPART_GP1		"4"
 
-#define PRESERVE_DYNAMIC_VARIABLES \
-	"board_name=$board_name && " \
-	"boot_device=$boot_device && " \
-	"boot_instance=$boot_instance && " \
-	"bootcount=$bootcount && " \
-	"dev_emmc=$dev_emmc && " \
-	"dev_sd=$dev_sd && " \
-	"ethaddr=$ethaddr && " \
-	"fdtcontroladdr=$fdtcontroladdr && " \
-	"fdtfile=$fdtfile && "
-
 #ifdef CONFIG_BOOT_INIT_EMMC
 /* eMMC initialization */
 #define UUID_GPT_DISK UUID_GPT_EMMC_DISK
@@ -135,18 +124,12 @@
 
 // TODO: BOS-1084 - Remove 'recovery_counter' from env not to trigger the recovery process
 #define DOWNGRADE_ENV "downgrade_env=" \
-	PRESERVE_DYNAMIC_VARIABLES \
-	"rootfs_index=$rootfs_index && " \
-	"env default -a && " \
-	"setenv bootcmd \"$bootcmd_default\" && " \
-	"env delete bootcmd_default bootcmd_bos board_name rootfs_index && " \
-	"setenv rootfs_index $rootfs_index && " \
-	"saveenv && " \
-	"setenv set_ethaddr 'test -z \"$ethaddr\" || setenv ethaddr $ethaddr' && " \
-	"run set_ethaddr" \
+	"ii_resetenv && " \
+	"ii_saveenv" \
 	"\0"
 
 #define FACTORY_ENV \
+	"env_preserve=board_name rootfs_index\0" \
 	"emmc_factory_env_hwpart="EMMC_HWPART_BOOT1"\0" \
 	"emmc_factory_env_blk=0x00001800\0" \
 	"emmc_factory_env_cnt=0x00000040\0" \
@@ -183,7 +166,8 @@
 #define ROOTFS_INDEX ""
 
 #define FACTORY_ENV \
-	"partitions="PARTS_DEFAULT"\0" \
+	"env_preserve=board_name\0" \
+	"partitions="PARTS_DEFAULT"\0"
 
 #define FACTORY_ENV_IMPORT ""
 
@@ -208,13 +192,9 @@
 	FACTORY_ENV_IMPORT \
 	"gpt write mmc $boot_instance $partitions && " \
 	FACTORY_INIT \
-	PRESERVE_DYNAMIC_VARIABLES \
-	"env default -a && " \
 	"setenv bootcmd \"$bootcmd_default\" && " \
-	"env delete bootcmd_default bootcmd_bos board_name && " \
-	"saveenv && " \
-	"setenv set_ethaddr 'test -z \"$ethaddr\" || setenv ethaddr $ethaddr' && " \
-	"run set_ethaddr && " \
+	"env delete bootcmd_default bootcmd_bos && " \
+	"ii_saveenv && " \
 	"boot" \
 	"\0"
 

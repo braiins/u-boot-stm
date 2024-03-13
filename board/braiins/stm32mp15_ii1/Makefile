@@ -23,3 +23,9 @@
 # contact us at opensource@braiins.com.
 
 obj-y += stm32mp15_ii1.o
+
+ifndef CONFIG_SPL_BUILD
+obj-y += cmd_ii_resetenv.o
+obj-y += cmd_ii_saveenv.o
+obj-y += env_utils.o
+endif
