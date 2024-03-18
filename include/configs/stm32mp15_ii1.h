@@ -128,13 +128,37 @@
 	"ii_saveenv" \
 	"\0"
 
+#define REVERT_BOOTLDRS "revert_bootldrs=" \
+	"part number mmc $dev_emmc fip fip_part && " \
+	"part start mmc $dev_emmc $fip_part fip_blk && " \
+	"setexpr image_blk $fip_blk + 0x1800 && " \
+	"mmc read $loadaddr $image_blk 0x800 && " \
+	"unzip $loadaddr $fsbl_addr_r && " \
+	"setexpr fsbl_cnt $filesize / $emmc_blk_size && " \
+	"setexpr image_blk $image_blk + 0x800 && " \
+	"mmc read $loadaddr $image_blk 0x1000 && " \
+	"unzip $loadaddr $fip_addr_r && " \
+	"setexpr fip_cnt $filesize / $emmc_blk_size && " \
+	"mmc dev $dev_emmc "EMMC_HWPART_BOOT1" && " \
+	"mmc write $fsbl_addr_r 0 $fsbl_cnt && " \
+	"mmc dev $dev_emmc && " \
+	"mmc write $fip_addr_r $fip_blk $fip_cnt && " \
+	"setenv bootcmd 'env default downgrade_env && run downgrade_env && boot' && " \
+	"saveenv && " \
+	"reset" \
+	"\0"
+
 #define FACTORY_ENV \
 	"env_preserve=board_name rootfs_index\0" \
 	"emmc_factory_env_hwpart="EMMC_HWPART_BOOT1"\0" \
 	"emmc_factory_env_blk=0x00001800\0" \
 	"emmc_factory_env_cnt=0x00000040\0" \
 	"emmc_factory_env_size=0x8000\0" \
-	DOWNGRADE_ENV
+	"emmc_blk_size=0x200\0" \
+	"fsbl_addr_r=0xc4000000\0" \
+	"fip_addr_r=0xc4100000\0" \
+	DOWNGRADE_ENV \
+	REVERT_BOOTLDRS
 
 #define FACTORY_ENV_IMPORT \
 	"mmc dev $dev_emmc $emmc_factory_env_hwpart && " \
