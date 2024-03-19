@@ -122,10 +122,15 @@
 
 #define ROOTFS_INDEX "1"
 
-// TODO: BOS-1084 - Remove 'recovery_counter' from env not to trigger the recovery process
 #define DOWNGRADE_ENV "downgrade_env=" \
 	"ii_resetenv && " \
 	"ii_saveenv" \
+	"\0"
+
+#define BOOTCMD_DOWNGRADE "bootcmd_downgrade=" \
+	"env default downgrade_env && " \
+	"run downgrade_env && " \
+	"boot" \
 	"\0"
 
 #define REVERT_BOOTLDRS "revert_bootldrs=" \
@@ -143,13 +148,53 @@
 	"mmc write $fsbl_addr_r 0 $fsbl_cnt && " \
 	"mmc dev $dev_emmc && " \
 	"mmc write $fip_addr_r $fip_blk $fip_cnt && " \
-	"setenv bootcmd 'env default downgrade_env && run downgrade_env && boot' && " \
+	"setenv bootcmd \"$bootcmd_downgrade\" && " \
 	"saveenv && " \
 	"reset" \
 	"\0"
 
+#define AUTO_RECOVERY "auto_recovery=" \
+	"env exists recovery_counter || exit; " \
+	"if test \"$recovery_counter\" -gt 0; then " \
+		"echo Auto recovery counter: $recovery_counter; " \
+		"setexpr recovery_counter $recovery_counter - 1 && " \
+		"ii_saveenv; " \
+	"else " \
+		"run revert_system; " \
+	"fi; " \
+	"\0"
+
+#define AUTO_RECOVERY_TRAP "auto_recovery_trap=" \
+	"env exists recovery_counter || exit; " \
+	"run revert_system" \
+	"\0"
+
+#define BOOTCMD_INIT \
+	"auto_recovery "
+
+#define BOOTCMD_TRAP "; " \
+	"run auto_recovery_trap"
+
+#define FACTORY_ENV_IMPORT \
+	"mmc dev $dev_emmc $emmc_factory_env_hwpart && " \
+	"mmc read $scriptaddr $emmc_factory_env_blk $emmc_factory_env_cnt && " \
+	"env import -c $scriptaddr $emmc_factory_env_size && "
+
+#define REVERT_SYSTEM "revert_system=" \
+	"echo Reverting rootfs${rootfs_index} due to corruption!; " \
+	"env delete recovery_counter; " \
+	FACTORY_ENV_IMPORT \
+	"setexpr rootfs_index $rootfs_index + $rootfs_index_count && " \
+	"setexpr rootfs_index $rootfs_index - 2 && " \
+	"setexpr rootfs_index $rootfs_index % $rootfs_index_count && " \
+	"setexpr rootfs_index $rootfs_index + 1 && " \
+	"setenv bootcmd \"$revert_bootldrs\" && " \
+	"saveenv && " \
+	"boot" \
+	"\0"
+
 #define FACTORY_ENV \
-	"env_preserve=board_name rootfs_index\0" \
+	"env_preserve=board_name recovery_counter rootfs_index\0" \
 	"emmc_factory_env_hwpart="EMMC_HWPART_BOOT1"\0" \
 	"emmc_factory_env_blk=0x00001800\0" \
 	"emmc_factory_env_cnt=0x00000040\0" \
@@ -158,12 +203,11 @@
 	"fsbl_addr_r=0xc4000000\0" \
 	"fip_addr_r=0xc4100000\0" \
 	DOWNGRADE_ENV \
-	REVERT_BOOTLDRS
-
-#define FACTORY_ENV_IMPORT \
-	"mmc dev $dev_emmc $emmc_factory_env_hwpart && " \
-	"mmc read $scriptaddr $emmc_factory_env_blk $emmc_factory_env_cnt && " \
-	"env import -c $scriptaddr $emmc_factory_env_size && "
+	BOOTCMD_DOWNGRADE \
+	REVERT_BOOTLDRS \
+	REVERT_SYSTEM \
+	AUTO_RECOVERY \
+	AUTO_RECOVERY_TRAP
 
 #define FACTORY_INIT \
 	"part number mmc $dev_emmc rootfs${rootfs_index} rootfs_part && " \
@@ -189,6 +233,10 @@
 
 #define ROOTFS_INDEX ""
 
+#define BOOTCMD_INIT ""
+
+#define BOOTCMD_TRAP ""
+
 #define FACTORY_ENV \
 	"env_preserve=board_name\0" \
 	"partitions="PARTS_DEFAULT"\0"
@@ -205,10 +253,12 @@
 	"\0"
 
 #define BOOTCMD_DEFAULT "bootcmd_default=" \
-	"run set_rootfs_part && " \
+	"run "BOOTCMD_INIT"set_rootfs_part && " \
 	"echo Loading U-Boot script... && " \
 	"load mmc ${boot_instance}:${rootfs_part} $scriptaddr boot/$script && " \
-	"source $scriptaddr" \
+	"source $scriptaddr; " \
+	"echo Boot of Linux kernel failed!" \
+	BOOTCMD_TRAP \
 	"\0"
 
 #define BOOTCMD_BOS "bootcmd_bos=" \
