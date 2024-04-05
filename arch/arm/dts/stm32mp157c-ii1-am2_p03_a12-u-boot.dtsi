@@ -1,0 +1,168 @@
+// SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause
+/*
+ * Copyright : STMicroelectronics 2018
+ */
+
+#include <dt-bindings/clock/stm32mp1-clksrc.h>
+#include "stm32mp15-u-boot.dtsi"
+#include "stm32mp15-ddr3-1x2Gb-1066-binG.dtsi"
+
+/ {
+	config {
+		u-boot,boot-led = "status-led";
+		u-boot,error-led = "fault-led";
+		u-boot,mmc-env-partition = "fip";
+	};
+
+#ifdef CONFIG_STM32MP15x_STM32IMAGE
+	config {
+		u-boot,mmc-env-partition = "ssbl";
+	};
+
+	/* only needed for boot with TF-A, witout FIP support */
+	firmware {
+		optee {
+			compatible = "linaro,optee-tz";
+			method = "smc";
+		};
+	};
+
+	reserved-memory {
+		optee@de000000 {
+			reg = <0xde000000 0x02000000>;
+			no-map;
+		};
+	};
+#endif
+};
+
+&adc {
+	status = "disable";
+};
+
+#ifndef CONFIG_TFABOOT
+&rcc {
+	st,hsi-cal;
+	st,csi-cal;
+	st,cal-sec = <60>;
+	st,clksrc = <
+		CLK_MPU_PLL1P
+		CLK_AXI_PLL2P
+		CLK_MCU_PLL3P
+		CLK_PLL12_HSE
+		CLK_PLL3_HSE
+		CLK_PLL4_HSE
+		CLK_RTC_LSI
+		CLK_MCO1_DISABLED
+		CLK_MCO2_DISABLED
+	>;
+
+	st,clkdiv = <
+		1 		/*MPU*/
+		0 		/*AXI*/
+		0 		/*MCU*/
+		1 		/*APB1*/
+		1 		/*APB2*/
+		1 		/*APB3*/
+		1 		/*APB4*/
+		2 		/*APB5*/
+		0 		/*RTC*/
+		0 		/*MCO1*/
+		0 		/*MCO2*/
+	>;
+
+	st,pkcs = <
+		CLK_CKPER_DISABLED
+		CLK_ETH_PLL3Q
+		CLK_SDMMC12_PLL4P
+		CLK_STGEN_HSE
+		CLK_USBPHY_DISABLED
+		CLK_SPI2S1_DISABLED
+		CLK_SPI2S23_DISABLED
+		CLK_SPI45_DISABLED
+		CLK_SPI6_DISABLED
+		CLK_I2C46_HSI
+		CLK_SDMMC3_DISABLED
+		CLK_ADC_DISABLED
+		CLK_CEC_DISABLED
+		CLK_I2C12_HSI
+		CLK_I2C35_DISABLED
+		CLK_UART1_DISABLED
+		CLK_UART24_HSI
+		CLK_UART35_HSI
+		CLK_UART6_DISABLED
+		CLK_UART78_HSI
+		CLK_SPDIF_DISABLED
+		CLK_SAI1_DISABLED
+		CLK_SAI2_DISABLED
+		CLK_SAI3_DISABLED
+		CLK_SAI4_DISABLED
+		CLK_LPTIM1_DISABLED
+		CLK_LPTIM23_DISABLED
+		CLK_LPTIM45_DISABLED
+	>;
+
+	pll2: st,pll@1 {
+		compatible = "st,stm32mp1-pll";
+		reg = <1>;
+		cfg = <2 65 1 1 0 PQR(1,0,1)>;
+		frac = <0x1400>;
+	};
+
+	pll3: st,pll@2 {
+		compatible = "st,stm32mp1-pll";
+		reg = <2>;
+		cfg = <1 49 2 11 52 PQR(1,1,0)>;
+	};
+
+	pll4: st,pll@3 {
+		compatible = "st,stm32mp1-pll";
+		reg = <3>;
+		cfg = <3 98 5 7 7 PQR(1,0,0)>;
+	};
+};
+
+&sdmmc1 {
+	u-boot,dm-spl;
+};
+
+&sdmmc1_pins_mx {
+	u-boot,dm-spl;
+	pins1 {
+		u-boot,dm-spl;
+	};
+	pins2 {
+		u-boot,dm-spl;
+	};
+};
+
+&sdmmc2 {
+	u-boot,dm-spl;
+};
+
+&sdmmc2_pins_mx {
+	u-boot,dm-spl;
+	pins1 {
+		u-boot,dm-spl;
+	};
+	pins2 {
+		u-boot,dm-spl;
+	};
+};
+#endif
+
+&uart4 {
+	u-boot,dm-pre-reloc;
+};
+
+&uart4_pins_mx {
+	u-boot,dm-pre-reloc;
+	pins1 {
+		u-boot,dm-pre-reloc;
+		/* pull-up on rx to avoid floating level */
+		bias-pull-up;
+	};
+	pins2 {
+		u-boot,dm-pre-reloc;
+	};
+};

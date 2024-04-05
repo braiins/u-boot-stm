@@ -952,6 +952,7 @@ dtb-$(CONFIG_STM32MP15x) += \
 	stm32mp157c-ev1.dtb \
 	stm32mp157c-odyssey.dtb \
 	stm32mp157c-ii1-am2.dtb \
+	stm32mp157c-ii1-am2_p03_a12.dtb \
 	stm32mp157c-ii1-am2_som.dtb \
 	stm32mp15xx-dhcom-drc02.dtb \
 	stm32mp157d-dk1.dtb \
