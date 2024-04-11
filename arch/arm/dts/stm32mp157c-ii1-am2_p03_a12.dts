@@ -66,6 +66,15 @@
 		ranges;
 	};
 
+	display_bl: display-bl {
+			compatible = "pwm-backlight";
+			pwms = <&pwm_bl 2 1000000 0>;
+			brightness-levels = <0 16 22 30 40 55 75 102 138 188 255>;
+			default-brightness-level = <8>;
+			power-supply = <&v3v3>;
+			status = "okay";
+	};
+
 	/*
 	 * PCB:     S2
 	 * SCH:     USR_BTN -> S2 (PTS645VL83-2 LFS)
@@ -170,20 +179,20 @@
 	/*PA0-PA3*/	    "FAN_RPM_A1", "ETH1_REF_CLK", "ETH1_MDIO", "FAN_RPM_B0",
 	/*PA4-PA7*/	    "", "FAN_RPM_A0", "FAN_RPM_B1", "ETH1_CRS_DV",
 	/*PA8-PA11*/	"SDMMC2_D4", "SDMMC2_D5", "GREEN_LED", "DEBUG_UART4_RX",
-	/*PA12-PA15*/	"DEBUG_UART4_TX", "", "", "";
+	/*PA12-PA15*/	"DEBUG_UART4_TX", "MM_LCD_DATA_CMD", "MM_ALERT_LOAD_SW", "";
 };
 
 &gpiob {
 	gpio-line-names =
-	/*PB0-PB3*/	    "", "", "", "SDMMC2_D2",
+	/*PB0-PB3*/	    "LCD_BACKLIGHT_PWM", "", "", "SDMMC2_D2",
 	/*PB4-PB7*/	    "SDMMC2_D3", "HB1_UART5_RX", "HB1_UART5_TX", "",
-	/*PB8-PB11*/	"EEPROM_I2C4_SCL", "EEPROM_I2C4_SDA", "FAN_PWM_B_TIM2_CH3", "ETH1_TX_EN",
-	/*PB12-PB15*/	"", "ETH1_TXD1", "SDMMC2_D0", "SDMMC2_D1";
+	/*PB8-PB11*/	"", "MM_ALERT_TOUCH", "", "ETH1_TX_EN",
+	/*PB12-PB15*/	"RESET_BUTTON", "ETH1_TXD1", "SDMMC2_D0", "SDMMC2_D1";
 };
 
 &gpioc {
 	gpio-line-names =
-	/*PC0-PC3*/	    "ETH1_PHY_RESET", "ETH1_MDC", "", "",
+	/*PC0-PC3*/	    "ETH1_PHY_RESET", "ETH1_MDC", "MM_LOAD_SW_HB_CTL", "MM_LCD_RESET",
 	/*PC4-PC7*/	    "ETH1_RXD0", "ETH1_RXD1", "", "",
 	/*PC8-PC11*/	"SDMMC1_D0", "SDMMC1_D1", "SDMMC1_D2", "SDMMC1_D3",
 	/*PC12-PC15*/	"SDMMC1_CK", "", "", "";
@@ -194,15 +203,15 @@
 	/*PD0-PD3*/	    "", "", "SDMMC1_CMD", "SDMMC2_D7",
 	/*PD4-PD7*/	    "HB0_PLUG", "PWR_CONTROL", "", "PWR_I2C2_SCL",
 	/*PD8-PD11*/	"HB0_USART3_TX", "HB0_USART3_RX", "HB0_RESET", "",
-	/*PD12-PD15*/	"HB_I2C1_SCL", "HB_I2C1_SDA", "", "";
+	/*PD12-PD15*/	"HB_I2C1_SCL", "HB_I2C1_SDA", "", "HB_PWR_CTL0";
 };
 
 &gpioe {
 	gpio-line-names =
-	/*PE0-PE3*/	    "HB3_UART8_RX", "HB3_UART8_TX", "", "SDMMC2_CK",
-	/*PE4-PE7*/	    "", "SDMMC2_D6", "", "HB2_UART7_RX",
+	/*PE0-PE3*/	    "HB3_UART8_RX", "HB3_UART8_TX", "MM_LOAD_SW_LCD_CTL", "SDMMC2_CK",
+	/*PE4-PE7*/	    "", "SDMMC2_D6", "MM_SPI4_MOSI", "HB2_UART7_RX",
 	/*PE8-PE11*/	"HB2_UART7_TX", "", "HB2_PLUG", "HB3_RESET",
-	/*PE12-PE15*/	"", "HB3_PLUG", "FAN_PWM_A_TIM1_CH4", "";
+	/*PE12-PE15*/	"", "HB3_PLUG", "FAN_PWM_A_TIM1_CH4", "HB_PWR_CTL2";
 };
 
 &gpiof {
@@ -217,7 +226,7 @@
 	/*PG0-PG3*/	    "", "", "", "",
 	/*PG4-PG7*/	    "", "", "SDMMC2_CMD", "USR_BTN",
 	/*PG8-PG11*/	"ETH1_CLK", "", "HB1_PLUG", "",
-	/*PG12-PG15*/	"", "ETH1_TXD0", "", "PWR_I2C2_SDA";
+	/*PG12-PG15*/	"HB_PWR_CTL1", "ETH1_TXD0", "HB_PWR_CTL3", "PWR_I2C2_SDA";
 };
 
 &gpioh {
@@ -341,6 +350,32 @@
 };
 
 /*
+ * LCD
+ */
+&spi4 {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&spi4_pins_mx>;
+	pinctrl-1 = <&spi4_sleep_pins_mx>;
+	cs-gpios = <&gpioe 4 GPIO_ACTIVE_LOW>;
+	status = "okay";
+
+	lcd@0 {
+		compatible = "sitronix,st7789v";
+		reg = <0>; /* CS #0 */
+		spi-max-frequency = <50000000>;
+		regwidth = <8>;
+		buswidth = <8>;
+		verbose = <3>;
+		rotate = <90>;
+		bgr;
+		fps = <30>;
+		reset-gpios = <&gpioc 3 GPIO_ACTIVE_LOW>;
+		dc-gpios = <&gpioa 13 GPIO_ACTIVE_HIGH>;
+		backlight = <&display_bl>;
+	};
+};
+
+/*
  * SRAM memory
  */
 &sram {
@@ -355,8 +390,8 @@
  * SCH:     PWM_A -> CON[1:2]
  * SoC:     TIM1_CH4 -> PE14 -> gpio[78]
  * Driver:  /sys/bus/platform/drivers/stm32-pwm
- * Device:  /sys/class/pwm/pwmchip4/pwm3
- *          /sys/devices/platform/soc/44000000.timer/44000000.timer:pwm/pwm/pwmchip4/pwm3
+ * Device:  /sys/class/pwm/pwmchip8/pwm3
+ *          /sys/devices/platform/soc/44000000.timer/44000000.timer:pwm/pwm/pwmchip8/pwm3
  */
 &timers1 {
 	dmas = <&dmamux1 14 0x400 0x80000001>,
@@ -390,6 +425,27 @@
 		pinctrl-names = "default", "sleep";
 		pinctrl-0 = <&tim2_pwm_pins_mx>;
 		pinctrl-1 = <&tim2_pwm_sleep_pins_mx>;
+		status = "okay";
+	};
+};
+
+/*
+ * PCB:     DISPLAY BACKLIGHT
+ * SCH:     LCD_BACKLIGHT_PWM -> CON9
+ * SoC:     TIM3_CH3 -> PB0 -> gpio[16]
+ * Driver:  /sys/bus/platform/drivers/stm32-pwm
+ * Device:  /sys/class/pwm/pwmchip4/pwm2
+ *          /sys/devices/platform/soc/40001000.timer/40001000.timer:pwm/pwm/pwmchip4/pwm2
+ */
+&timers3 {
+	/delete-property/dmas;
+	/delete-property/dma-names;
+	status = "okay";
+
+	pwm_bl: pwm {
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&tim3_pwm_pins_mx>;
+		pinctrl-1 = <&tim3_pwm_sleep_pins_mx>;
 		status = "okay";
 	};
 };

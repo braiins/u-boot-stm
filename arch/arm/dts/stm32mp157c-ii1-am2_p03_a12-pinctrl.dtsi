@@ -237,6 +237,23 @@
 		};
 	};
 
+	spi4_pins_mx: spi4_mx-0 {
+		pins {
+			pinmux = <STM32_PINMUX('E', 6, AF5)>, /* SPI4_MOSI */
+					 <STM32_PINMUX('E', 12, AF5)>; /* SPI4_SCK */
+			bias-disable;
+			drive-push-pull;
+			slew-rate = <1>;
+		};
+	};
+
+	spi4_sleep_pins_mx: spi4_sleep_mx-0 {
+		pins {
+			pinmux = <STM32_PINMUX('E', 6, ANALOG)>, /* SPI4_MOSI */
+					 <STM32_PINMUX('E', 12, ANALOG)>; /* SPI4_SCK */
+		};
+	};
+
 	tim1_pwm_pins_mx: tim1_pwm_mx-0 {
 		pins {
 			pinmux = <STM32_PINMUX('E', 14, AF1)>; /* TIM1_CH4 */
@@ -266,6 +283,21 @@
 			pinmux = <STM32_PINMUX('B', 10, ANALOG)>; /* TIM2_CH3 */
 		};
 	};
+
+    tim3_pwm_pins_mx: tim3_pwm_mx-0 {
+            pins {
+                    pinmux = <STM32_PINMUX('B', 0, AF2)>; /* TIM3_CH3 */
+                    bias-disable;
+                    drive-push-pull;
+                    slew-rate = <0>;
+            };
+    };
+
+    tim3_pwm_sleep_pins_mx: tim3_pwm_sleep_mx-0 {
+            pins {
+                    pinmux = <STM32_PINMUX('B', 0, ANALOG)>; /* TIM3_CH3 */
+            };
+    };
 
 	uart4_pins_mx: uart4_mx-0 {
 		pins1 {
