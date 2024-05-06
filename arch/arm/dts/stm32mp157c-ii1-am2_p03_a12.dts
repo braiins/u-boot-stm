@@ -89,6 +89,12 @@
 			linux,code = <BTN_0>;
 			gpios = <&gpiog 7 GPIO_ACTIVE_LOW>;
 		};
+
+		reset {
+			label = "reset";
+			linux,code = <KEY_RESTART>;
+			gpios = <&gpiob 12 GPIO_ACTIVE_LOW>;
+		};
 	};
 
 	/*
