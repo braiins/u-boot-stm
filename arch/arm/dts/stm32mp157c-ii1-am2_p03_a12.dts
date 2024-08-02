@@ -233,9 +233,9 @@
 &gpioc {
 	gpio-line-names =
 	/*PC0-PC3*/	    "ETH1_PHY_RESET", "ETH1_MDC", "MM_LOAD_SW_HB_CTL", "MM_LCD_RESET",
-	/*PC4-PC7*/	    "ETH1_RXD0", "ETH1_RXD1", "", "",
+	/*PC4-PC7*/	    "ETH1_RXD0", "ETH1_RXD1", "", "EMMC_RESET",
 	/*PC8-PC11*/	"SDMMC1_D0", "SDMMC1_D1", "SDMMC1_D2", "SDMMC1_D3",
-	/*PC12-PC15*/	"SDMMC1_CK", "", "", "";
+	/*PC12-PC15*/	"SDMMC1_CK", "CARD_DETECT", "", "";
 };
 
 &gpiod {
@@ -249,7 +249,7 @@
 &gpioe {
 	gpio-line-names =
 	/*PE0-PE3*/	    "HB3_UART8_RX", "HB3_UART8_TX", "MM_LOAD_SW_LCD_CTL", "SDMMC2_CK",
-	/*PE4-PE7*/	    "", "SDMMC2_D6", "MM_SPI4_MOSI", "HB2_UART7_RX",
+	/*PE4-PE7*/	    "SPI4_NSS", "SDMMC2_D6", "MM_SPI4_MOSI", "HB2_UART7_RX",
 	/*PE8-PE11*/	"HB2_UART7_TX", "", "HB2_PLUG", "HB3_RESET",
 	/*PE12-PE15*/	"", "HB3_PLUG", "FAN_PWM_A_TIM1_CH4", "HB_PWR_CTL2";
 };
