@@ -105,6 +105,19 @@ config TARGET_BRAIINS_STM32MP15_II1
 	help
 		Target the Braiins stm32mp15_ii1 control board with STM32MP15x SoC.
 
+config TARGET_BRAIINS_STM32MP15_II2
+	bool "Braiins STM32MP15x (ii2) Control Board"
+	select STM32MP15x
+	imply BOOTCOUNT_LIMIT
+	imply BOOTSTAGE
+	imply CMD_BOOTCOUNT
+	imply CMD_BOOTSTAGE
+	imply DISABLE_CONSOLE
+	imply PRE_CONSOLE_BUFFER
+	imply SILENT_CONSOLE
+	help
+		Target the Braiins stm32mp15_ii2 control board with STM32MP15x SoC.
+
 endchoice
 
 config SYS_TEXT_BASE

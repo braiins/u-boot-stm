@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
 /*
- * Copyright (C) 2023  Braiins Systems s.r.o.
+ * Copyright (C) 2024  Braiins Systems s.r.o.
  *
  * This file is part of Braiins Open-Source Initiative (BOSI).
  *
@@ -30,13 +30,13 @@
 
 #include "stm32mp157.dtsi"
 #include "stm32mp15xc.dtsi"
-#include "stm32mp157c-ii1-am2_p03_a12-pinctrl.dtsi"
+#include "stm32mp157c-ii2-bmm1-pinctrl.dtsi"
 #include "stm32mp15xxab-pinctrl.dtsi"
 #include "stm32mp15-m4-srm.dtsi"
 
 / {
-	model = "Braiins STM32MP157C (ii1-am2_p03_a12) Control Board";
-	compatible = "braiins,stm32mp157c-ii1-am2_p03_a12", "st,stm32mp157";
+	model = "Braiins STM32MP157C (ii2-bmm1) Control Board";
+	compatible = "braiins,stm32mp157c-ii2-bmm1", "st,stm32mp157";
 
 	aliases {
 		ethernet0 = &ethernet0;

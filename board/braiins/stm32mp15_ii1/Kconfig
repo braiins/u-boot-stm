@@ -9,6 +9,23 @@ config SYS_VENDOR
 config SYS_CONFIG_NAME
 	default "stm32mp15_ii1"
 
+endif
+
+if TARGET_BRAIINS_STM32MP15_II2
+
+config SYS_BOARD
+	default "stm32mp15_ii1"
+
+config SYS_VENDOR
+	default "braiins"
+
+config SYS_CONFIG_NAME
+	default "stm32mp15_ii2"
+
+endif
+
+if TARGET_BRAIINS_STM32MP15_II1 || TARGET_BRAIINS_STM32MP15_II2
+
 choice
 	prompt "Boot initialization"
 
