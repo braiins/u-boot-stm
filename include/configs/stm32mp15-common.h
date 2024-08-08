@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause */
 /*
- * Copyright (C) 2023  Braiins Systems s.r.o.
+ * Copyright (C) 2024  Braiins Systems s.r.o.
  *
  * This file is part of Braiins Open-Source Initiative (BOSI).
  *
@@ -26,8 +26,8 @@
  * Copyright (C) 2018, STMicroelectronics - All Rights Reserved
  */
 
-#ifndef __CONFIG_H
-#define __CONFIG_H
+#ifndef __STM32MP15_COMMON_CONFIG_H
+#define __STM32MP15_COMMON_CONFIG_H
 #include <linux/sizes.h>
 #include <asm/arch/stm32.h>
 
@@ -296,4 +296,4 @@
 #endif /* ifndef CONFIG_SPL_BUILD */
 #endif /* ifdef CONFIG_DISTRO_DEFAULTS*/
 
-#endif /* __CONFIG_H */
+#endif /* __STM32MP15_COMMON_CONFIG_H */
