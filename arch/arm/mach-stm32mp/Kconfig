@@ -198,6 +198,6 @@ endif
 source "arch/arm/mach-stm32mp/cmd_stm32prog/Kconfig"
 source "board/st/stm32mp1/Kconfig"
 source "board/dhelectronics/dh_stm32mp1/Kconfig"
-source "board/braiins/stm32mp15_ii1/Kconfig"
+source "board/braiins/stm32mp157c/Kconfig"
 
 endif

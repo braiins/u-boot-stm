@@ -22,7 +22,7 @@
 # of such proprietary license or if you have any other questions, please
 # contact us at opensource@braiins.com.
 
-obj-y += stm32mp15_ii1.o
+obj-y += stm32mp157c.o
 
 ifndef CONFIG_SPL_BUILD
 obj-y += cmd_ii_resetenv.o

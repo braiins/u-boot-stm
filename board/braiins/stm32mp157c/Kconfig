@@ -1,7 +1,7 @@
 if TARGET_BRAIINS_STM32MP15_II1
 
 config SYS_BOARD
-	default "stm32mp15_ii1"
+	default "stm32mp157c"
 
 config SYS_VENDOR
 	default "braiins"
@@ -14,7 +14,7 @@ endif
 if TARGET_BRAIINS_STM32MP15_II2
 
 config SYS_BOARD
-	default "stm32mp15_ii1"
+	default "stm32mp157c"
 
 config SYS_VENDOR
 	default "braiins"
