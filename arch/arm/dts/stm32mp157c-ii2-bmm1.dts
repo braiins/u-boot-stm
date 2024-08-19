@@ -41,14 +41,13 @@
 	aliases {
 		ethernet0 = &ethernet0;
 		i2c0 = &i2c1;
-		i2c1 = &i2c2;
+		i2c1 = &i2c4;
 		mmc0 = &sdmmc2;     /* eMMC */
 		mmc1 = &sdmmc1;     /* SD card */
+		mmc2 = &sdmmc3;     /* WiFi Module */
 		serial0 = &uart4;   /* DEBUG */
 		serial1 = &usart3;  /* Hashboard 1 */
-		serial2 = &uart5;   /* Hashboard 2 */
-		serial3 = &uart7;   /* Hashboard 3 */
-		serial4 = &uart8;   /* Hashboard 4 */
+		serial2 = &uart8;   /* ESP32 (WiFi) */
 	};
 
 	chosen {
@@ -216,7 +215,7 @@
 &gpioa {
 	gpio-line-names =
 	/*PA0-PA3*/	    "FAN_RPM_A1", "ETH1_REF_CLK", "ETH1_MDIO", "FAN_RPM_B0",
-	/*PA4-PA7*/	    "", "FAN_RPM_A0", "FAN_RPM_B1", "ETH1_CRS_DV",
+	/*PA4-PA7*/	    "HB0_PLUG", "FAN_RPM_A0", "FAN_RPM_B1", "ETH1_CRS_DV",
 	/*PA8-PA11*/	"SDMMC2_D4", "SDMMC2_D5", "GREEN_LED", "DEBUG_UART4_RX",
 	/*PA12-PA15*/	"DEBUG_UART4_TX", "MM_LCD_DATA_CMD", "MM_ALERT_LOAD_SW", "";
 };
@@ -224,7 +223,7 @@
 &gpiob {
 	gpio-line-names =
 	/*PB0-PB3*/	    "LCD_BACKLIGHT_PWM", "", "", "SDMMC2_D2",
-	/*PB4-PB7*/	    "SDMMC2_D3", "HB1_UART5_RX", "HB1_UART5_TX", "",
+	/*PB4-PB7*/	    "SDMMC2_D3", "", "I2C4_SCL", "I2C4_SDA",
 	/*PB8-PB11*/	"", "MM_ALERT_TOUCH", "", "ETH1_TX_EN",
 	/*PB12-PB15*/	"RESET_BUTTON", "ETH1_TXD1", "SDMMC2_D0", "SDMMC2_D1";
 };
@@ -232,40 +231,40 @@
 &gpioc {
 	gpio-line-names =
 	/*PC0-PC3*/	    "ETH1_PHY_RESET", "ETH1_MDC", "MM_LOAD_SW_HB_CTL", "MM_LCD_RESET",
-	/*PC4-PC7*/	    "ETH1_RXD0", "ETH1_RXD1", "", "",
+	/*PC4-PC7*/	    "ETH1_RXD0", "ETH1_RXD1", "", "EMMC_RESET",
 	/*PC8-PC11*/	"SDMMC1_D0", "SDMMC1_D1", "SDMMC1_D2", "SDMMC1_D3",
 	/*PC12-PC15*/	"SDMMC1_CK", "", "", "";
 };
 
 &gpiod {
 	gpio-line-names =
-	/*PD0-PD3*/	    "", "", "SDMMC1_CMD", "SDMMC2_D7",
-	/*PD4-PD7*/	    "HB0_PLUG", "PWR_CONTROL", "", "PWR_I2C2_SCL",
+	/*PD0-PD3*/	    "SDMMC3_CMD", "SDMMC3_D0", "SDMMC1_CMD", "SDMMC2_D7",
+	/*PD4-PD7*/	    "SDMMC3_D1", "SDMMC3_D2", "", "SDMMC3_D3",
 	/*PD8-PD11*/	"HB0_USART3_TX", "HB0_USART3_RX", "HB0_RESET", "",
 	/*PD12-PD15*/	"HB_I2C1_SCL", "HB_I2C1_SDA", "", "HB_PWR_CTL0";
 };
 
 &gpioe {
 	gpio-line-names =
-	/*PE0-PE3*/	    "HB3_UART8_RX", "HB3_UART8_TX", "MM_LOAD_SW_LCD_CTL", "SDMMC2_CK",
-	/*PE4-PE7*/	    "", "SDMMC2_D6", "MM_SPI4_MOSI", "HB2_UART7_RX",
-	/*PE8-PE11*/	"HB2_UART7_TX", "", "HB2_PLUG", "HB3_RESET",
-	/*PE12-PE15*/	"", "HB3_PLUG", "FAN_PWM_A_TIM1_CH4", "HB_PWR_CTL2";
+	/*PE0-PE3*/	    "WIFI_UART8_RX", "WIFI_UART8_TX", "MM_LOAD_SW_LCD_CTL", "SDMMC2_CK",
+	/*PE4-PE7*/	    "SPI4_NSS", "SDMMC2_D6", "MM_SPI4_MOSI", "",
+	/*PE8-PE11*/	"PWR_CONTROL", "", "", "WIFI_RESET",
+	/*PE12-PE15*/	"SPI4_SCK", "", "FAN_PWM_A_TIM1_CH4", "WIFI_BOOT";
 };
 
 &gpiof {
 	gpio-line-names =
 	/*PF0-PF3*/	    "", "", "", "",
 	/*PF4-PF7*/	    "", "", "", "RED_LED",
-	/*PF8-PF11*/	"HB2_RESET", "HB1_RESET", "", "";
+	/*PF8-PF11*/	"", "", "", "";
 };
 
 &gpiog {
 	gpio-line-names =
 	/*PG0-PG3*/	    "", "", "", "",
 	/*PG4-PG7*/	    "", "", "SDMMC2_CMD", "USR_BTN",
-	/*PG8-PG11*/	"ETH1_CLK", "", "HB1_PLUG", "",
-	/*PG12-PG15*/	"HB_PWR_CTL1", "ETH1_TXD0", "HB_PWR_CTL3", "PWR_I2C2_SDA";
+	/*PG8-PG11*/	"ETH1_CLK", "", "", "",
+	/*PG12-PG15*/	"", "ETH1_TXD0", "", "SDMMC3_CK";
 };
 
 &gpioh {
@@ -278,8 +277,8 @@
 };
 
 /*
- * PCB:     Hashboard 1-4
- * SCH:     HB[0:3] - CON7[A:D]
+ * PCB:     Hashboard 1
+ * SCH:     HB0 - Hashboard
  *              I2C1_SDA -> pin[3]
  *              I2C1_SCL -> pin[4]
  * SoC:     I2C1_SDA -> PD13 -> gpio[61]
@@ -297,21 +296,24 @@
 };
 
 /*
- * PCB:     PSU
- * SCH:     PWR_COM - CON8
+ * PCB:     PSU/TP
+ * SCH:     PWR_COM - CON12
  *              SDA -> pin[5]
  *              SCL -> pin[6]
- * SoC:     I2C2_SDA -> PG15 -> gpio[111]
- *          I2C2_SCL -> PD7 -> gpio[55]
+ *          MINI_MINER - CON9
+ *              SDA -> pin[16]
+ *              SCL -> pin[15]
+ * SoC:     I2C4_SDA -> PB7 -> gpio[23]
+ *          I2C4_SCL -> PB6 -> gpio[22]
  * Driver:  /sys/bus/platform/drivers/stm32f7-i2c
  * Device:  /sys/class/i2c-dev/i2c-1
- *          /sys/devices/platform/soc/40013000.i2c/i2c-1/i2c-dev/i2c-1
+ *          /sys/devices/platform/soc/5c002000.i2c/i2c-1/i2c-dev/i2c-1
  *          /dev/i2c-1
  */
-&i2c2 {
+&i2c4 {
 	pinctrl-names = "default", "sleep";
-	pinctrl-0 = <&i2c2_pins_mx>;
-	pinctrl-1 = <&i2c2_sleep_pins_mx>;
+	pinctrl-0 = <&i2c4_pins_mx>;
+	pinctrl-1 = <&i2c4_sleep_pins_mx>;
 	status = "disabled";
 };
 
@@ -372,6 +374,21 @@
 };
 
 /*
+ * WiFi module
+ */
+&sdmmc3 {
+	pinctrl-names = "default", "opendrain", "sleep";
+	pinctrl-0 = <&sdmmc3_pins_mx>;
+	pinctrl-1 = <&sdmmc3_opendrain_pins_mx>;
+	pinctrl-2 = <&sdmmc3_sleep_pins_mx>;
+	broken-cd;
+	st,neg-edge;
+	bus-width = <4>;
+	vmmc-supply = <&v3v3>;
+	status = "okay";
+};
+
+/*
  * LCD
  */
 &spi4 {
@@ -382,7 +399,7 @@
 	status = "okay";
 
 	lcd@0 {
-		compatible = "sitronix,st7789v";
+		compatible = "sitronix,st7365p";
 		reg = <0>; /* CS #0 */
 		spi-max-frequency = <50000000>;
 		regwidth = <8>;
@@ -490,45 +507,7 @@
 };
 
 /*
- * PCB:     Hashboard 2
- * SCH:     HB1 - CON7B
- *              HB_RXD -> pin[12]
- *              HB_TXD -> pin[11]
- * SoC:     UART5_RX -> PB5 -> gpio[21]
- *          UART5_TX -> PB6 -> gpio[22]
- * Driver:  /sys/bus/platform/drivers/stm32-usart
- * Device:  /sys/class/tty/ttySTM2
- *          /sys/devices/platform/soc/40011000.serial/tty/ttySTM2
- *          /dev/ttySTM2
- */
-&uart5 {
-	pinctrl-names = "default", "sleep";
-	pinctrl-0 = <&uart5_pins_mx>;
-	pinctrl-1 = <&uart5_sleep_pins_mx>;
-	status = "okay";
-};
-
-/*
- * PCB:     Hashboard 3
- * SCH:     HB2 - CON7C
- *              HB_RXD -> pin[12]
- *              HB_TXD -> pin[11]
- * SoC:     UART7_RX -> PE7 -> gpio[71]
- *          UART7_TX -> PE8 -> gpio[72]
- * Driver:  /sys/bus/platform/drivers/stm32-usart
- * Device:  /sys/class/tty/ttySTM3
- *          /sys/devices/platform/soc/40018000.serial/tty/ttySTM3
- *          /dev/ttySTM3
- */
-&uart7 {
-	pinctrl-names = "default", "sleep";
-	pinctrl-0 = <&uart7_pins_mx>;
-	pinctrl-1 = <&uart7_sleep_pins_mx>;
-	status = "okay";
-};
-
-/*
- * PCB:     Hashboard 4
+ * PCB:     WiFi module
  * SCH:     HB3 - CON7D
  *              HB_RXD -> pin[12]
  *              HB_TXD -> pin[11]
@@ -536,8 +515,8 @@
  *          UART8_TX -> PE1 -> gpio[65]
  * Driver:  /sys/bus/platform/drivers/stm32-usart
  * Device:  /sys/class/tty/ttySTM4
- *          /sys/devices/platform/soc/40019000.serial/tty/ttySTM4
- *          /dev/ttySTM4
+ *          /sys/devices/platform/soc/40019000.serial/tty/ttySTM2
+ *          /dev/ttySTM2
  */
 &uart8 {
 	pinctrl-names = "default", "sleep";
@@ -548,7 +527,7 @@
 
 /*
  * PCB:     Hashboard 1
- * SCH:     HB0 - CON7A
+ * SCH:     HB0 - Hashboard
  *              HB_RXD -> pin[12]
  *              HB_TXD -> pin[11]
  * SoC:     USART3_RX -> PD9 -> gpio[57]
