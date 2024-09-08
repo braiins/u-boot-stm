@@ -42,7 +42,6 @@
 		ethernet0 = &ethernet0;
 		i2c0 = &i2c1;
 		i2c1 = &i2c2;
-		i2c2 = &i2c4;
 		mmc0 = &sdmmc2;     /* eMMC */
 		mmc1 = &sdmmc1;     /* SD card */
 		serial0 = &uart4;   /* DEBUG */
@@ -313,23 +312,6 @@
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&i2c2_pins_mx>;
 	pinctrl-1 = <&i2c2_sleep_pins_mx>;
-	status = "disabled";
-};
-
-/*
- * PCB:     EEPROM
- * SCH:     CON9
- *              SDA -> pin[2]
- *              SCL -> pin[1]
- * SoC:     I2C4_SDA -> PB9 -> gpio[25]
- *          I2C4_SCL -> PB8 -> gpio[24]
- */
-&i2c4 {
-	pinctrl-names = "default", "sleep";
-	pinctrl-0 = <&i2c4_pins_mx>;
-	pinctrl-1 = <&i2c4_sleep_pins_mx>;
-	/delete-property/dmas;
-	/delete-property/dma-names;
 	status = "disabled";
 };
 
