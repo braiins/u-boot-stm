@@ -314,7 +314,20 @@
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&i2c4_pins_mx>;
 	pinctrl-1 = <&i2c4_sleep_pins_mx>;
-	status = "disabled";
+	status = "okay";
+	clock-frequency = <100000>;
+	gt911@5d {
+		compatible = "goodix,gt911";
+		reg = <0x5d>;
+		interrupt-parent = <&gpiob>;
+		interrupts = <9 IRQ_TYPE_EDGE_FALLING>;
+		irq-gpios = <&gpiob 9 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&gpioe 2 GPIO_ACTIVE_LOW>;
+		touchscreen-size-x = <320>;
+		touchscreen-size-y = <480>;
+		touchscreen-swapped-x-y;
+		touchscreen-inverted-x;
+	};
 };
 
 /*
