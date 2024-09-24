@@ -382,6 +382,7 @@
 	pinctrl-1 = <&sdmmc3_opendrain_pins_mx>;
 	pinctrl-2 = <&sdmmc3_sleep_pins_mx>;
 	broken-cd;
+	cap-sdio-irq;
 	st,neg-edge;
 	bus-width = <4>;
 	vmmc-supply = <&v3v3>;
